@@ -6,7 +6,7 @@
     <title>Beranda Petugas - Sistem Informasi Kelurahan</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    @vite('resources/css/app.css')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="warga-home-page">
     @include('layout.header')
@@ -47,7 +47,7 @@
                         </div>
                         <div class="stat-info">
                             <p class="stat-label">Analisis Demografi & Sosial</p>
-                            <button class="stat-action btn-lihat-detail" id="btn-analisis-demografi">Lihat Detail</button>
+                            <button type="button" class="stat-action btn-lihat-detail" id="btn-analisis-demografi">Lihat Detail</button>
                         </div>
                     </div>
                 </div>
@@ -175,10 +175,10 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn-export" id="btn-export-data">
+                <button type="button" class="btn-export" id="btn-export-data">
                     <i class="fas fa-download"></i> Export Data
                 </button>
-                <button class="btn-close" id="btn-close-modal-footer">
+                <button type="button" class="btn-close" id="btn-close-modal-footer">
                     Tutup
                 </button>
             </div>
@@ -186,237 +186,214 @@
     </div>
 
     <script>
-        const modalDemografi = document.getElementById('modal-demografi');
-        const btnAnalisisDemografi = document.getElementById('btn-analisis-demografi');
-        const btnCloseModal = document.getElementById('btn-close-modal');
-        const btnCloseModalFooter = document.getElementById('btn-close-modal-footer');
-        const modalOverlay = document.getElementById('modal-overlay');
-        const chartTabs = document.querySelectorAll('.chart-tab');
-        const chartWrappers = document.querySelectorAll('.chart-wrapper');
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalDemografi = document.getElementById('modal-demografi');
+            const btnAnalisisDemografi = document.getElementById('btn-analisis-demografi');
+            const btnCloseModal = document.getElementById('btn-close-modal');
+            const btnCloseModalFooter = document.getElementById('btn-close-modal-footer');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const chartTabs = document.querySelectorAll('.chart-tab');
+            const chartWrappers = document.querySelectorAll('.chart-wrapper');
+            const btnExportData = document.getElementById('btn-export-data');
 
-        let chartUsia = null;
-        let chartGender = null;
-        let chartAgama = null;
-
-        // Open Modal
-        btnAnalisisDemografi.addEventListener('click', function(e) {
-            e.preventDefault();
-            modalDemografi.classList.remove('hidden');
-            setTimeout(() => {
-                initCharts();
-            }, 100);
-        });
-
-        // Close Modal Functions
-        function closeModal() {
-            modalDemografi.classList.add('hidden');
-        }
-
-        btnCloseModal.addEventListener('click', closeModal);
-        btnCloseModalFooter.addEventListener('click', closeModal);
-        modalOverlay.addEventListener('click', closeModal);
-
-        // Close modal saat tekan ESC
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && !modalDemografi.classList.contains('hidden')) {
-                closeModal();
+            if (!modalDemografi || !btnAnalisisDemografi || !btnCloseModal || !btnCloseModalFooter || !modalOverlay) {
+                return;
             }
-        });
 
-        // Chart Tab Switching
-        chartTabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                const chartType = this.getAttribute('data-chart');
+            let chartUsia = null;
+            let chartGender = null;
+            let chartAgama = null;
 
-                // Remove active class dari semua tabs dan wrappers
-                chartTabs.forEach(t => t.classList.remove('active'));
-                chartWrappers.forEach(w => w.classList.remove('active'));
+            function closeModal() {
+                modalDemografi.classList.add('hidden');
+            }
 
-                // Add active class ke tab dan wrapper yang dipilih
-                this.classList.add('active');
-                document.getElementById(`chart-${chartType}`).classList.add('active');
-            });
-        });
+            function destroyCharts() {
+                if (chartUsia) chartUsia.destroy();
+                if (chartGender) chartGender.destroy();
+                if (chartAgama) chartAgama.destroy();
 
-        // Initialize Charts
-        function initCharts() {
-            // Destroy existing charts jika ada
-            if (chartUsia) chartUsia.destroy();
-            if (chartGender) chartGender.destroy();
-            if (chartAgama) chartAgama.destroy();
+                chartUsia = null;
+                chartGender = null;
+                chartAgama = null;
+            }
 
-            // Chart Usia (Pie Chart)
-            const ctxUsia = document.getElementById('myChartUsia').getContext('2d');
-            chartUsia = new Chart(ctxUsia, {
-                type: 'doughnut',
-                data: {
-                    labels: [
-                        '0-5 Tahun',
-                        '6-12 Tahun',
-                        '13-18 Tahun',
-                        '19-35 Tahun',
-                        '36-50 Tahun',
-                        '51-65 Tahun',
-                        '> 65 Tahun'
-                    ],
-                    datasets: [{
-                        label: 'Jumlah Penduduk',
-                        data: [145, 287, 312, 638, 452, 256, 112],
-                        backgroundColor: [
-                            '#FF6B6B',
-                            '#4ECDC4',
-                            '#45B7D1',
-                            '#FFA07A',
-                            '#98D8C8',
-                            '#F7DC6F',
-                            '#BB8FCE'
-                        ],
-                        borderColor: '#fff',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 15,
-                                font: { size: 12, weight: 500 },
-                                color: '#374151'
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = ((context.parsed / total) * 100).toFixed(1);
-                                    return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
-                                }
-                            }
-                        }
-                    }
+            function initCharts() {
+                if (!window.Chart) {
+                    return;
                 }
-            });
 
-            // Chart Gender (Bar Chart)
-            const ctxGender = document.getElementById('myChartGender').getContext('2d');
-            chartGender = new Chart(ctxGender, {
-                type: 'bar',
-                data: {
-                    labels: ['Laki-Laki', 'Perempuan'],
-                    datasets: [{
-                        label: 'Jumlah Penduduk',
-                        data: [1247, 1300],
-                        backgroundColor: [
-                            '#4f46e5',
-                            '#ec4899'
-                        ],
-                        borderRadius: 8,
-                        borderSkipped: false,
-                        borderColor: 'rgba(255, 255, 255, 0.3)',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return 'Jumlah: ' + context.parsed.x + ' orang';
-                                }
-                            }
-                        }
+                const chartUsiaCanvas = document.getElementById('myChartUsia');
+                const chartGenderCanvas = document.getElementById('myChartGender');
+                const chartAgamaCanvas = document.getElementById('myChartAgama');
+
+                if (!chartUsiaCanvas || !chartGenderCanvas || !chartAgamaCanvas) {
+                    return;
+                }
+
+                destroyCharts();
+
+                chartUsia = new Chart(chartUsiaCanvas.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['0-5 Tahun', '6-12 Tahun', '13-18 Tahun', '19-35 Tahun', '36-50 Tahun', '51-65 Tahun', '> 65 Tahun'],
+                        datasets: [{
+                            label: 'Jumlah Penduduk',
+                            data: [145, 287, 312, 638, 452, 256, 112],
+                            backgroundColor: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE'],
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        }]
                     },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            max: 1500,
-                            ticks: {
-                                color: '#6b7280'
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 15,
+                                    font: { size: 12, weight: 500 },
+                                    color: '#374151'
+                                }
                             },
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
-                            }
-                        },
-                        y: {
-                            ticks: {
-                                color: '#6b7280',
-                                font: { size: 12, weight: 500 }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Chart Agama (Horizontal Bar Chart)
-            const ctxAgama = document.getElementById('myChartAgama').getContext('2d');
-            chartAgama = new Chart(ctxAgama, {
-                type: 'bar',
-                data: {
-                    labels: ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Budha', 'Kong Hu Cu'],
-                    datasets: [{
-                        label: 'Jumlah Penduduk',
-                        data: [1456, 542, 287, 156, 98, 8],
-                        backgroundColor: [
-                            '#10b981',
-                            '#3b82f6',
-                            '#f59e0b',
-                            '#ef4444',
-                            '#8b5cf6',
-                            '#ec4899'
-                        ],
-                        borderRadius: 8,
-                        borderSkipped: false
-                    }]
-                },
-                options: {
-                    indexAxis: 'y',
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return 'Jumlah: ' + context.parsed.x + ' orang';
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                        return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                                    }
                                 }
                             }
                         }
+                    }
+                });
+
+                chartGender = new Chart(chartGenderCanvas.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Laki-Laki', 'Perempuan'],
+                        datasets: [{
+                            label: 'Jumlah Penduduk',
+                            data: [1247, 1300],
+                            backgroundColor: ['#4f46e5', '#ec4899'],
+                            borderRadius: 8,
+                            borderSkipped: false,
+                            borderColor: 'rgba(255, 255, 255, 0.3)',
+                            borderWidth: 2
+                        }]
                     },
-                    scales: {
-                        x: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: '#6b7280'
-                            },
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return 'Jumlah: ' + context.parsed.x + ' orang';
+                                    }
+                                }
                             }
                         },
-                        y: {
-                            ticks: {
-                                color: '#6b7280',
-                                font: { size: 12, weight: 500 }
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 1500,
+                                ticks: { color: '#6b7280' },
+                                grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                            },
+                            y: {
+                                ticks: {
+                                    color: '#6b7280',
+                                    font: { size: 12, weight: 500 }
+                                }
                             }
                         }
                     }
+                });
+
+                chartAgama = new Chart(chartAgamaCanvas.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Budha', 'Kong Hu Cu'],
+                        datasets: [{
+                            label: 'Jumlah Penduduk',
+                            data: [1456, 542, 287, 156, 98, 8],
+                            backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'],
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return 'Jumlah: ' + context.parsed.x + ' orang';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: { color: '#6b7280' },
+                                grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                            },
+                            y: {
+                                ticks: {
+                                    color: '#6b7280',
+                                    font: { size: 12, weight: 500 }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            btnAnalisisDemografi.addEventListener('click', function(e) {
+                e.preventDefault();
+                modalDemografi.classList.remove('hidden');
+                setTimeout(initCharts, 50);
+            });
+
+            btnCloseModal.addEventListener('click', closeModal);
+            btnCloseModalFooter.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', closeModal);
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !modalDemografi.classList.contains('hidden')) {
+                    closeModal();
                 }
             });
-        }
 
-        // Export Data
-        document.getElementById('btn-export-data').addEventListener('click', function() {
-            alert('📊 Fitur export data akan segera tersedia!');
+            chartTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const chartType = this.getAttribute('data-chart');
+
+                    chartTabs.forEach(t => t.classList.remove('active'));
+                    chartWrappers.forEach(w => w.classList.remove('active'));
+
+                    this.classList.add('active');
+                    const activeChart = document.getElementById(`chart-${chartType}`);
+                    if (activeChart) {
+                        activeChart.classList.add('active');
+                    }
+                });
+            });
+
+            if (btnExportData) {
+                btnExportData.addEventListener('click', function() {
+                    alert('📊 Fitur export data akan segera tersedia!');
+                });
+            }
         });
     </script>
 </body>
