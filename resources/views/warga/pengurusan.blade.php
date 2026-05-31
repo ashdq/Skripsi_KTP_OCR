@@ -19,10 +19,17 @@
                     <h1>Formulir Pengajuan Surat</h1>
                 </div>
 
+                @if (session('success'))
+                    <div class="alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
                 <div class="form-section">
-                    <form method="POST" action="{{ url('/warga/pengurusan/submit') }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('warga.pengurusan.submit') }}" enctype="multipart/form-data" id="dokumen-form">
                         @csrf
 
+                        <div id="upload-step">
                         <!-- Pilih Layanan Surat -->
                         <div class="form-group-section">
                             <label class="section-label">Pilih Layanan Surat</label>
@@ -85,7 +92,7 @@
                         <div class="form-actions">
                             <button type="button" class="btn-submit" id="btn-lanjut">Lanjutkan</button>
                         </div>
-                    </form>
+                        </div>
 
                     <!-- Form Data Identitas (Tersembunyi) -->
                     <div id="identitas-section" class="identitas-section hidden">
@@ -94,9 +101,6 @@
                             <p>Lengkapi data identitas Anda untuk pengajuan surat</p>
                         </div>
 
-                        <form method="POST" action="{{ url('/warga/pengurusan/submit') }}" enctype="multipart/form-data" id="form-pengurusan-lengkap">
-                            @csrf
-
                             <!-- Grid Data Identitas -->
                             <div class="identitas-grid">
                                 <!-- Nama Lengkap -->
@@ -104,7 +108,7 @@
                                     <label for="nama" class="form-label">
                                         <i class="fas fa-user"></i> Nama Lengkap
                                     </label>
-                                    <input type="text" id="nama" name="nama" class="form-input" placeholder="Masukkan nama lengkap" required>
+                                    <input type="text" id="nama" name="nama" class="form-input" placeholder="Masukkan nama lengkap" disabled required>
                                 </div>
 
                                 <!-- NIK -->
@@ -112,7 +116,7 @@
                                     <label for="nik" class="form-label">
                                         <i class="fas fa-id-card"></i> Nomor NIK
                                     </label>
-                                    <input type="text" id="nik" name="nik" class="form-input" placeholder="Masukkan 16 digit NIK" maxlength="16" required>
+                                    <input type="text" id="nik" name="nik" class="form-input" placeholder="Masukkan 16 digit NIK" maxlength="16" disabled required>
                                 </div>
 
                                 <!-- Nomor KK -->
@@ -120,7 +124,7 @@
                                     <label for="nomor_kk" class="form-label">
                                         <i class="fas fa-users"></i> Nomor Kartu Keluarga
                                     </label>
-                                    <input type="text" id="nomor_kk" name="nomor_kk" class="form-input" placeholder="Masukkan 16 digit Nomor KK" maxlength="16" required>
+                                    <input type="text" id="nomor_kk" name="nomor_kk" class="form-input" placeholder="Masukkan 16 digit Nomor KK" maxlength="16" disabled required>
                                 </div>
 
                                 <!-- Tempat Lahir -->
@@ -128,7 +132,7 @@
                                     <label for="tempat_lahir" class="form-label">
                                         <i class="fas fa-map-marker"></i> Tempat Lahir
                                     </label>
-                                    <input type="text" id="tempat_lahir" name="tempat_lahir" class="form-input" placeholder="Masukkan tempat lahir" required>
+                                    <input type="text" id="tempat_lahir" name="tempat_lahir" class="form-input" placeholder="Masukkan tempat lahir" disabled required>
                                 </div>
 
                                 <!-- Tanggal Lahir -->
@@ -136,7 +140,7 @@
                                     <label for="tanggal_lahir" class="form-label">
                                         <i class="fas fa-calendar"></i> Tanggal Lahir
                                     </label>
-                                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" class="form-input" required>
+                                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" class="form-input" disabled required>
                                 </div>
 
                                 <!-- Jenis Kelamin -->
@@ -144,7 +148,7 @@
                                     <label for="jenis_kelamin" class="form-label">
                                         <i class="fas fa-venus-mars"></i> Jenis Kelamin
                                     </label>
-                                    <select id="jenis_kelamin" name="jenis_kelamin" class="form-input" required>
+                                    <select id="jenis_kelamin" name="jenis_kelamin" class="form-input" disabled required>
                                         <option value="">-- Pilih Jenis Kelamin --</option>
                                         <option value="laki-laki">Laki-laki</option>
                                         <option value="perempuan">Perempuan</option>
@@ -156,7 +160,7 @@
                                     <label for="agama" class="form-label">
                                         <i class="fas fa-heart"></i> Agama
                                     </label>
-                                    <select id="agama" name="agama" class="form-input" required>
+                                    <select id="agama" name="agama" class="form-input" disabled required>
                                         <option value="">-- Pilih Agama --</option>
                                         <option value="islam">Islam</option>
                                         <option value="kristen">Kristen</option>
@@ -172,7 +176,7 @@
                                     <label for="status_perkawinan" class="form-label">
                                         <i class="fas fa-ring"></i> Status Perkawinan
                                     </label>
-                                    <select id="status_perkawinan" name="status_perkawinan" class="form-input" required>
+                                    <select id="status_perkawinan" name="status_perkawinan" class="form-input" disabled required>
                                         <option value="">-- Pilih Status --</option>
                                         <option value="belum_kawin">Belum Kawin</option>
                                         <option value="kawin">Kawin</option>
@@ -186,7 +190,7 @@
                                     <label for="pekerjaan" class="form-label">
                                         <i class="fas fa-briefcase"></i> Pekerjaan
                                     </label>
-                                    <input type="text" id="pekerjaan" name="pekerjaan" class="form-input" placeholder="Masukkan pekerjaan" required>
+                                    <input type="text" id="pekerjaan" name="pekerjaan" class="form-input" placeholder="Masukkan pekerjaan" disabled required>
                                 </div>
 
                                 <!-- Alamat -->
@@ -194,7 +198,7 @@
                                     <label for="alamat" class="form-label">
                                         <i class="fas fa-address-card"></i> Alamat Lengkap
                                     </label>
-                                    <textarea id="alamat" name="alamat" class="form-input" placeholder="Masukkan alamat lengkap" rows="3" required></textarea>
+                                    <textarea id="alamat" name="alamat" class="form-input" placeholder="Masukkan alamat lengkap" rows="3" disabled required></textarea>
                                 </div>
 
                                 <!-- RT/RW -->
@@ -202,14 +206,14 @@
                                     <label for="rt" class="form-label">
                                         <i class="fas fa-home"></i> RT
                                     </label>
-                                    <input type="text" id="rt" name="rt" class="form-input" placeholder="RT" maxlength="3" required>
+                                    <input type="text" id="rt" name="rt" class="form-input" placeholder="RT" maxlength="3" disabled required>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="rw" class="form-label">
                                         <i class="fas fa-home"></i> RW
                                     </label>
-                                    <input type="text" id="rw" name="rw" class="form-input" placeholder="RW" maxlength="3" required>
+                                    <input type="text" id="rw" name="rw" class="form-input" placeholder="RW" maxlength="3" disabled required>
                                 </div>
 
                                 <!-- Kelurahan/Desa -->
@@ -217,7 +221,7 @@
                                     <label for="kelurahan" class="form-label">
                                         <i class="fas fa-map"></i> Kelurahan/Desa
                                     </label>
-                                    <input type="text" id="kelurahan" name="kelurahan" class="form-input" placeholder="Kelurahan/Desa" required>
+                                    <input type="text" id="kelurahan" name="kelurahan" class="form-input" placeholder="Kelurahan/Desa" disabled required>
                                 </div>
 
                                 <!-- Kecamatan -->
@@ -225,7 +229,7 @@
                                     <label for="kecamatan" class="form-label">
                                         <i class="fas fa-map"></i> Kecamatan
                                     </label>
-                                    <input type="text" id="kecamatan" name="kecamatan" class="form-input" placeholder="Kecamatan" required>
+                                    <input type="text" id="kecamatan" name="kecamatan" class="form-input" placeholder="Kecamatan" disabled required>
                                 </div>
 
                                 <!-- Kota -->
@@ -233,7 +237,7 @@
                                     <label for="kota" class="form-label">
                                         <i class="fas fa-city"></i> Kota/Kabupaten
                                     </label>
-                                    <input type="text" id="kota" name="kota" class="form-input" placeholder="Kota/Kabupaten" required>
+                                    <input type="text" id="kota" name="kota" class="form-input" placeholder="Kota/Kabupaten" disabled required>
                                 </div>
 
                                 <!-- Provinsi -->
@@ -241,7 +245,7 @@
                                     <label for="provinsi" class="form-label">
                                         <i class="fas fa-map-location-dot"></i> Provinsi
                                     </label>
-                                    <input type="text" id="provinsi" name="provinsi" class="form-input" placeholder="Provinsi" required>
+                                    <input type="text" id="provinsi" name="provinsi" class="form-input" placeholder="Provinsi" disabled required>
                                 </div>
 
                                 <!-- Kode Pos -->
@@ -249,7 +253,7 @@
                                     <label for="kode_pos" class="form-label">
                                         <i class="fas fa-envelope"></i> Kode Pos
                                     </label>
-                                    <input type="text" id="kode_pos" name="kode_pos" class="form-input" placeholder="Kode Pos" maxlength="5" required>
+                                    <input type="text" id="kode_pos" name="kode_pos" class="form-input" placeholder="Kode Pos" maxlength="5" disabled required>
                                 </div>
 
                                 <!-- No Telepon -->
@@ -257,16 +261,17 @@
                                     <label for="no_telepon" class="form-label">
                                         <i class="fas fa-phone"></i> No Telepon
                                     </label>
-                                    <input type="tel" id="no_telepon" name="no_telepon" class="form-input" placeholder="08xx-xxxx-xxxx" required>
+                                    <input type="tel" id="no_telepon" name="no_telepon" class="form-input" placeholder="08xx-xxxx-xxxx" disabled required>
                                 </div>
                             </div>
 
                             <!-- Form Actions -->
                             <div class="form-actions-identitas">
                                 <button type="button" class="btn-batal" id="btn-batal">Batal</button>
-                                <button type="submit" class="btn-submit">Kirim Pengajuan</button>
+                                <button type="button" class="btn-submit" id="btn-simpan-identitas">Kirim Pengajuan</button>
                             </div>
-                        </form>
+                    </div>
+                    </form>
                     </div>
                 </div>
             </div>
@@ -280,8 +285,19 @@
         const kkInput = document.getElementById('kk');
         const btnLanjut = document.getElementById('btn-lanjut');
         const btnBatal = document.getElementById('btn-batal');
-        const uploadForm = document.querySelector('.form-section form');
+        const uploadStep = document.getElementById('upload-step');
         const identitasSection = document.getElementById('identitas-section');
+        const dokumenForm = document.getElementById('dokumen-form');
+        const identitasInputs = identitasSection.querySelectorAll('input, select, textarea');
+        const btnSimpanIdentitas = document.getElementById('btn-simpan-identitas');
+
+        function setIdentitasDisabled(state) {
+            identitasInputs.forEach((element) => {
+                element.disabled = state;
+            });
+        }
+
+        setIdentitasDisabled(true);
 
         // Update filename when file is selected
         ktpInput.addEventListener('change', function(e) {
@@ -298,6 +314,9 @@
         btnLanjut.addEventListener('click', function(e) {
             e.preventDefault();
 
+            const jenisSurat = document.querySelector('select[name="jenis_surat"]');
+            const csrfToken = dokumenForm.querySelector('input[name="_token"]').value;
+
             // Validasi file upload
             if (!ktpInput.files.length) {
                 alert('⚠️ Silakan upload file KTP terlebih dahulu');
@@ -311,38 +330,64 @@
                 return;
             }
 
-            // Update hidden inputs dengan jenis surat
-            const jenisSurat = document.querySelector('select[name="jenis_surat"]');
-            const jenisSuratInput = document.createElement('input');
-            jenisSuratInput.type = 'hidden';
-            jenisSuratInput.name = 'jenis_surat';
-            jenisSuratInput.value = jenisSurat.value;
-            document.getElementById('form-pengurusan-lengkap').appendChild(jenisSuratInput);
+            if (!jenisSurat.value) {
+                alert('⚠️ Silakan pilih jenis surat terlebih dahulu');
+                jenisSurat.focus();
+                return;
+            }
 
-            // Copy file inputs ke form identitas
-            const formData = new FormData();
-            formData.append('ktp', ktpInput.files[0]);
-            formData.append('kk', kkInput.files[0]);
+            const payload = new FormData();
+            payload.append('_token', csrfToken);
+            payload.append('jenis_surat', jenisSurat.value);
+            payload.append('ktp', ktpInput.files[0]);
+            payload.append('kk', kkInput.files[0]);
 
-            // Store di hidden inputs
-            const ktpHidden = document.createElement('input');
-            ktpHidden.type = 'hidden';
-            ktpHidden.name = 'ktp';
-            ktpHidden.value = ktpInput.value;
+            btnLanjut.disabled = true;
+            btnLanjut.textContent = 'Mengunggah...';
 
-            const kkHidden = document.createElement('input');
-            kkHidden.type = 'hidden';
-            kkHidden.name = 'kk';
-            kkHidden.value = kkInput.value;
+            fetch(dokumenForm.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+                body: payload,
+            })
+                .then(async (response) => {
+                    const data = await response.json().catch(() => ({}));
 
-            // Hide upload form, show identitas form
-            uploadForm.style.display = 'none';
-            identitasSection.classList.remove('hidden');
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Gagal mengunggah dokumen.');
+                    }
 
-            // Smooth scroll to identitas section
-            setTimeout(() => {
-                identitasSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 100);
+                    return data;
+                })
+                .then((data) => {
+                    uploadStep.classList.add('hidden');
+                    identitasSection.classList.remove('hidden');
+                    setIdentitasDisabled(false);
+
+                    const successMessage = document.querySelector('.alert-success');
+                    if (successMessage) {
+                        successMessage.remove();
+                    }
+
+                    const messageBox = document.createElement('div');
+                    messageBox.className = 'alert-success';
+                    messageBox.textContent = data.message || 'Dokumen KTP dan KK berhasil diunggah.';
+                    dokumenForm.parentElement.insertBefore(messageBox, dokumenForm);
+
+                    setTimeout(() => {
+                        identitasSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                })
+                .catch((error) => {
+                    alert(error.message);
+                })
+                .finally(() => {
+                    btnLanjut.disabled = false;
+                    btnLanjut.textContent = 'Lanjutkan';
+                });
         });
 
         // Handle Batal Button
@@ -350,14 +395,21 @@
             e.preventDefault();
 
             // Show upload form, hide identitas form
-            uploadForm.style.display = 'block';
+            uploadStep.classList.remove('hidden');
             identitasSection.classList.add('hidden');
+            setIdentitasDisabled(true);
 
             // Smooth scroll to top
             setTimeout(() => {
                 document.querySelector('.page-header').scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
         });
+
+        if (btnSimpanIdentitas) {
+            btnSimpanIdentitas.addEventListener('click', function() {
+                alert('Bagian penyimpanan identitas akan dihubungkan pada controller berikutnya.');
+            });
+        }
     </script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DokumenController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -30,10 +31,7 @@ Route::middleware('auth')->group(function () {
         return view('warga.pengurusan');
     })->name('warga.pengurusan');
 
-    Route::post('/warga/pengurusan/submit', function () {
-        // TODO: Proses upload file dan simpan ke database
-        return redirect()->route('warga.home')->with('success', 'Pengajuan surat berhasil dikirim');
-    })->name('warga.pengurusan.submit');
+    Route::post('/warga/pengurusan/submit', [DokumenController::class, 'upload'])->name('warga.pengurusan.submit');
 
     Route::get('/petugas/home', function () {
         return view('petugas.home');

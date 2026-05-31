@@ -605,6 +605,17 @@ body {
     box-shadow: 0 0 0 3px rgba(26, 71, 42, 0.1);
 }
 
+.alert-success {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    color: #14532d;
+    font-weight: 600;
+}
+
 /* ================================
    UPLOAD CONTAINER
    ================================ */
