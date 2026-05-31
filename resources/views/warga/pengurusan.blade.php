@@ -25,6 +25,47 @@
                     </div>
                 @endif
 
+                @php
+                    $hasExistingKtp = !empty($existingKtp);
+                    $hasExistingKk = !empty($existingKk);
+                @endphp
+
+                <div class="document-status-grid">
+                    <div class="document-status-card {{ $hasExistingKtp ? 'is-ready' : 'is-empty' }}">
+                        <div class="document-status-title">KTP</div>
+                        <div class="document-status-body">
+                            @if ($hasExistingKtp)
+                                <i class="fas fa-file-circle-check"></i>
+                                <span>{{ $existingKtp['name'] }}</span>
+                                <div class="document-status-actions">
+                                    <button type="button" class="btn-preview-document" data-preview-url="{{ $existingKtp['preview_url'] }}" data-preview-name="KTP - {{ $existingKtp['name'] }}" data-preview-type="{{ $existingKtp['type'] }}">Lihat</button>
+                                    <a class="btn-download-document" href="{{ $existingKtp['download_url'] }}">Unduh</a>
+                                </div>
+                            @else
+                                <i class="fas fa-file-circle-xmark"></i>
+                                <span>Belum ada dokumen tersimpan</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="document-status-card {{ $hasExistingKk ? 'is-ready' : 'is-empty' }}">
+                        <div class="document-status-title">KK</div>
+                        <div class="document-status-body">
+                            @if ($hasExistingKk)
+                                <i class="fas fa-file-circle-check"></i>
+                                <span>{{ $existingKk['name'] }}</span>
+                                <div class="document-status-actions">
+                                    <button type="button" class="btn-preview-document" data-preview-url="{{ $existingKk['preview_url'] }}" data-preview-name="KK - {{ $existingKk['name'] }}" data-preview-type="{{ $existingKk['type'] }}">Lihat</button>
+                                    <a class="btn-download-document" href="{{ $existingKk['download_url'] }}">Unduh</a>
+                                </div>
+                            @else
+                                <i class="fas fa-file-circle-xmark"></i>
+                                <span>Belum ada dokumen tersimpan</span>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-section">
                     <form method="POST" action="{{ route('warga.pengurusan.submit') }}" enctype="multipart/form-data" id="dokumen-form">
                         @csrf
@@ -61,12 +102,12 @@
                                             <h3>KTP</h3>
                                         </div>
                                         <div class="upload-box">
-                                            <input type="file" id="ktp" name="ktp" class="file-input" accept=".pdf,.jpg,.jpeg,.png" required>
+                                            <input type="file" id="ktp" name="ktp" class="file-input" accept=".pdf,.jpg,.jpeg,.png">
                                             <label for="ktp" class="file-label">
                                                 <i class="fas fa-cloud-arrow-up"></i>
-                                                <span>Browse</span>
+                                                <span>{{ $hasExistingKtp ? 'Ganti KTP' : 'Browse' }}</span>
                                             </label>
-                                            <p class="upload-filename" id="ktp-filename">Tidak ada file dipilih</p>
+                                            <p class="upload-filename" id="ktp-filename">{{ $hasExistingKtp ? $existingKtp['name'] : 'Tidak ada file dipilih' }}</p>
                                         </div>
                                     </div>
 
@@ -76,12 +117,12 @@
                                             <h3>KK</h3>
                                         </div>
                                         <div class="upload-box">
-                                            <input type="file" id="kk" name="kk" class="file-input" accept=".pdf,.jpg,.jpeg,.png" required>
+                                            <input type="file" id="kk" name="kk" class="file-input" accept=".pdf,.jpg,.jpeg,.png">
                                             <label for="kk" class="file-label">
                                                 <i class="fas fa-cloud-arrow-up"></i>
-                                                <span>Browse</span>
+                                                <span>{{ $hasExistingKk ? 'Ganti KK' : 'Browse' }}</span>
                                             </label>
-                                            <p class="upload-filename" id="kk-filename">Tidak ada file dipilih</p>
+                                            <p class="upload-filename" id="kk-filename">{{ $hasExistingKk ? $existingKk['name'] : 'Tidak ada file dipilih' }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -204,16 +245,9 @@
                                 <!-- RT/RW -->
                                 <div class="form-group">
                                     <label for="rt" class="form-label">
-                                        <i class="fas fa-home"></i> RT
+                                        <i class="fas fa-home"></i> RT/RW
                                     </label>
-                                    <input type="text" id="rt" name="rt" class="form-input" placeholder="RT" maxlength="3" disabled required>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="rw" class="form-label">
-                                        <i class="fas fa-home"></i> RW
-                                    </label>
-                                    <input type="text" id="rw" name="rw" class="form-input" placeholder="RW" maxlength="3" disabled required>
+                                    <input type="text" id="rt" name="rt" class="form-input" placeholder="RT/RW" maxlength="3" disabled required>
                                 </div>
 
                                 <!-- Kelurahan/Desa -->
@@ -248,20 +282,12 @@
                                     <input type="text" id="provinsi" name="provinsi" class="form-input" placeholder="Provinsi" disabled required>
                                 </div>
 
-                                <!-- Kode Pos -->
-                                <div class="form-group">
-                                    <label for="kode_pos" class="form-label">
-                                        <i class="fas fa-envelope"></i> Kode Pos
-                                    </label>
-                                    <input type="text" id="kode_pos" name="kode_pos" class="form-input" placeholder="Kode Pos" maxlength="5" disabled required>
-                                </div>
-
                                 <!-- No Telepon -->
                                 <div class="form-group">
                                     <label for="no_telepon" class="form-label">
                                         <i class="fas fa-phone"></i> No Telepon
                                     </label>
-                                    <input type="tel" id="no_telepon" name="no_telepon" class="form-input" placeholder="08xx-xxxx-xxxx" disabled required>
+                                    <input type="tel" id="no_telepon" name="no_telepon" class="form-input" value="{{ old('no_telepon', optional(auth()->user()->warga)->nomor_hp) }}" placeholder="08xx-xxxx-xxxx" disabled required>
                                 </div>
                             </div>
 
@@ -272,6 +298,22 @@
                             </div>
                     </div>
                     </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="preview-modal" class="preview-modal hidden">
+                <div class="preview-modal-overlay" id="preview-modal-overlay"></div>
+                <div class="preview-modal-content">
+                    <div class="preview-modal-header">
+                        <h2 id="preview-modal-title">Preview Dokumen</h2>
+                        <button type="button" class="preview-modal-close" id="preview-modal-close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="preview-modal-body">
+                        <img id="preview-modal-image" class="preview-media hidden" alt="Preview dokumen">
+                        <iframe id="preview-modal-pdf" class="preview-media hidden" title="Preview dokumen"></iframe>
                     </div>
                 </div>
             </div>
@@ -290,6 +332,15 @@
         const dokumenForm = document.getElementById('dokumen-form');
         const identitasInputs = identitasSection.querySelectorAll('input, select, textarea');
         const btnSimpanIdentitas = document.getElementById('btn-simpan-identitas');
+        const hasExistingKtp = @json($hasExistingKtp ?? false);
+        const hasExistingKk = @json($hasExistingKk ?? false);
+        const previewModal = document.getElementById('preview-modal');
+        const previewModalOverlay = document.getElementById('preview-modal-overlay');
+        const previewModalClose = document.getElementById('preview-modal-close');
+        const previewModalTitle = document.getElementById('preview-modal-title');
+        const previewModalImage = document.getElementById('preview-modal-image');
+        const previewModalPdf = document.getElementById('preview-modal-pdf');
+        const previewButtons = document.querySelectorAll('.btn-preview-document');
 
         function setIdentitasDisabled(state) {
             identitasInputs.forEach((element) => {
@@ -316,15 +367,17 @@
 
             const jenisSurat = document.querySelector('select[name="jenis_surat"]');
             const csrfToken = dokumenForm.querySelector('input[name="_token"]').value;
+            const ktpSelected = ktpInput.files.length > 0;
+            const kkSelected = kkInput.files.length > 0;
 
-            // Validasi file upload
-            if (!ktpInput.files.length) {
+            // Validasi file upload jika belum pernah ada dokumen
+            if (!ktpSelected && !hasExistingKtp) {
                 alert('⚠️ Silakan upload file KTP terlebih dahulu');
                 ktpInput.focus();
                 return;
             }
 
-            if (!kkInput.files.length) {
+            if (!kkSelected && !hasExistingKk) {
                 alert('⚠️ Silakan upload file KK terlebih dahulu');
                 kkInput.focus();
                 return;
@@ -336,11 +389,29 @@
                 return;
             }
 
+            if (!ktpSelected && !kkSelected && (hasExistingKtp || hasExistingKk)) {
+                uploadStep.classList.add('hidden');
+                identitasSection.classList.remove('hidden');
+                setIdentitasDisabled(false);
+
+                setTimeout(() => {
+                    identitasSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+
+                return;
+            }
+
             const payload = new FormData();
             payload.append('_token', csrfToken);
             payload.append('jenis_surat', jenisSurat.value);
-            payload.append('ktp', ktpInput.files[0]);
-            payload.append('kk', kkInput.files[0]);
+
+            if (ktpSelected) {
+                payload.append('ktp', ktpInput.files[0]);
+            }
+
+            if (kkSelected) {
+                payload.append('kk', kkInput.files[0]);
+            }
 
             btnLanjut.disabled = true;
             btnLanjut.textContent = 'Mengunggah...';
@@ -363,6 +434,14 @@
                     return data;
                 })
                 .then((data) => {
+                    if (ktpSelected) {
+                        document.getElementById('ktp-filename').textContent = data.ktp ? data.ktp.split('/').pop() : ktpInput.files[0].name;
+                    }
+
+                    if (kkSelected) {
+                        document.getElementById('kk-filename').textContent = data.kk ? data.kk.split('/').pop() : kkInput.files[0].name;
+                    }
+
                     uploadStep.classList.add('hidden');
                     identitasSection.classList.remove('hidden');
                     setIdentitasDisabled(false);
@@ -410,6 +489,48 @@
                 alert('Bagian penyimpanan identitas akan dihubungkan pada controller berikutnya.');
             });
         }
+
+        function openPreviewModal({ url, name, type }) {
+            previewModalTitle.textContent = name;
+
+            previewModalImage.classList.add('hidden');
+            previewModalPdf.classList.add('hidden');
+
+            if (type === 'image') {
+                previewModalImage.src = url;
+                previewModalImage.classList.remove('hidden');
+            } else {
+                previewModalPdf.src = url;
+                previewModalPdf.classList.remove('hidden');
+            }
+
+            previewModal.classList.remove('hidden');
+        }
+
+        function closePreviewModal() {
+            previewModal.classList.add('hidden');
+            previewModalImage.src = '';
+            previewModalPdf.src = '';
+        }
+
+        previewButtons.forEach((button) => {
+            button.addEventListener('click', function() {
+                openPreviewModal({
+                    url: this.dataset.previewUrl,
+                    name: this.dataset.previewName,
+                    type: this.dataset.previewType,
+                });
+            });
+        });
+
+        previewModalOverlay.addEventListener('click', closePreviewModal);
+        previewModalClose.addEventListener('click', closePreviewModal);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !previewModal.classList.contains('hidden')) {
+                closePreviewModal();
+            }
+        });
     </script>
 </body>
 </html>

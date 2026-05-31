@@ -15,7 +15,7 @@ class Warga extends Model
     protected $table = 'warga';
 
     protected $fillable = [
-        'nama',
+        'nama_warga',
         'nomor_hp',
         'user_id',
     ];

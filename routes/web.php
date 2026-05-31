@@ -27,11 +27,17 @@ Route::middleware('auth')->group(function () {
         return view('warga.unduh');
     })->name('warga.unduh');
 
-    Route::get('/warga/pengurusan', function () {
-        return view('warga.pengurusan');
-    })->name('warga.pengurusan');
+    Route::get('/warga/pengurusan', [DokumenController::class, 'pengurusan'])->name('warga.pengurusan');
 
     Route::post('/warga/pengurusan/submit', [DokumenController::class, 'upload'])->name('warga.pengurusan.submit');
+
+    Route::get('/warga/pengurusan/dokumen/{type}/preview', [DokumenController::class, 'previewDocument'])
+        ->whereIn('type', ['ktp', 'kk'])
+        ->name('warga.dokumen.preview');
+
+    Route::get('/warga/pengurusan/dokumen/{type}/download', [DokumenController::class, 'downloadDocument'])
+        ->whereIn('type', ['ktp', 'kk'])
+        ->name('warga.dokumen.download');
 
     Route::get('/petugas/home', function () {
         return view('petugas.home');
