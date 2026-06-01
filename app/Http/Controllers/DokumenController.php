@@ -174,11 +174,12 @@ class DokumenController extends Controller
 
     private function decorateExistingFile(array $file, string $type, Warga $warga): array
     {
+        $lastModified = Storage::disk('public')->lastModified($file['path']);
         return [
             'path' => $file['path'],
             'name' => $file['name'],
-            'preview_url' => route('warga.dokumen.preview', ['type' => $type]),
-            'download_url' => route('warga.dokumen.download', ['type' => $type]),
+            'preview_url' => route('warga.dokumen.preview', ['type' => $type]) . '?t=' . $lastModified,
+            'download_url' => route('warga.dokumen.download', ['type' => $type]) . '?t=' . $lastModified,
             'type' => $file['type'],
         ];
     }

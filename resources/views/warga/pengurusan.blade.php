@@ -381,9 +381,7 @@
                         const state = JSON.parse(savedState);
                         identitasInputs.forEach(input => {
                             if (input.name && state[input.name] !== undefined) {
-                                if (!input.value) {
-                                    input.value = state[input.name];
-                                }
+                                input.value = state[input.name];
                             }
                         });
                     } catch(e) {}
