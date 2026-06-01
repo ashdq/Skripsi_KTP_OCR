@@ -31,15 +31,18 @@ class DokumenController extends Controller
             'ktp' => null,
             'kk' => null,
         ];
+        $ocrData = null;
 
         if ($warga) {
             $existingDocuments = $this->getExistingDocuments($warga);
+            $ocrData = Ocr::where('warga_id', $warga->id)->first();
         }
 
         return view('warga.pengurusan', [
             'existingKtp' => $existingDocuments['ktp'],
             'existingKk' => $existingDocuments['kk'],
             'warga' => $warga,
+            'ocrData' => $ocrData,
         ]);
     }
 

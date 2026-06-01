@@ -149,7 +149,7 @@
                                     <label for="nama" class="form-label">
                                         <i class="fas fa-user"></i> Nama Lengkap
                                     </label>
-                                    <input type="text" id="nama" name="nama" class="form-input" placeholder="Masukkan nama lengkap" disabled required>
+                                    <input type="text" id="nama" name="nama" class="form-input" value="{{ old('nama', optional($ocrData ?? null)->nama) }}" placeholder="Masukkan nama lengkap" disabled required>
                                 </div>
 
                                 <!-- NIK -->
@@ -157,7 +157,7 @@
                                     <label for="nik" class="form-label">
                                         <i class="fas fa-id-card"></i> Nomor NIK
                                     </label>
-                                    <input type="text" id="nik" name="nik" class="form-input" placeholder="Masukkan 16 digit NIK" maxlength="16" disabled required>
+                                    <input type="text" id="nik" name="nik" class="form-input" value="{{ old('nik', optional($ocrData ?? null)->nik) }}" placeholder="Masukkan 16 digit NIK" maxlength="16" disabled required>
                                 </div>
 
                                 <!-- Nomor KK -->
@@ -165,7 +165,7 @@
                                     <label for="nomor_kk" class="form-label">
                                         <i class="fas fa-users"></i> Nomor Kartu Keluarga
                                     </label>
-                                    <input type="text" id="nomor_kk" name="nomor_kk" class="form-input" placeholder="Masukkan 16 digit Nomor KK" maxlength="16" disabled required>
+                                    <input type="text" id="nomor_kk" name="nomor_kk" class="form-input" value="{{ old('nomor_kk', optional($ocrData ?? null)->nomor_kk) }}" placeholder="Masukkan 16 digit Nomor KK" maxlength="16" disabled required>
                                 </div>
 
                                 <!-- Tempat Lahir -->
@@ -173,7 +173,7 @@
                                     <label for="tempat_lahir" class="form-label">
                                         <i class="fas fa-map-marker"></i> Tempat Lahir
                                     </label>
-                                    <input type="text" id="tempat_lahir" name="tempat_lahir" class="form-input" placeholder="Masukkan tempat lahir" disabled required>
+                                    <input type="text" id="tempat_lahir" name="tempat_lahir" class="form-input" value="{{ old('tempat_lahir', optional($ocrData ?? null)->tempat_lahir) }}" placeholder="Masukkan tempat lahir" disabled required>
                                 </div>
 
                                 <!-- Tanggal Lahir -->
@@ -181,7 +181,7 @@
                                     <label for="tanggal_lahir" class="form-label">
                                         <i class="fas fa-calendar"></i> Tanggal Lahir
                                     </label>
-                                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" class="form-input" disabled required>
+                                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" class="form-input" value="{{ old('tanggal_lahir', optional($ocrData ?? null)->tanggal_lahir) }}" disabled required>
                                 </div>
 
                                 <!-- Jenis Kelamin -->
@@ -191,8 +191,8 @@
                                     </label>
                                     <select id="jenis_kelamin" name="jenis_kelamin" class="form-input" disabled required>
                                         <option value="">-- Pilih Jenis Kelamin --</option>
-                                        <option value="laki-laki">Laki-laki</option>
-                                        <option value="perempuan">Perempuan</option>
+                                        <option value="laki-laki" {{ old('jenis_kelamin', optional($ocrData ?? null)->jenis_kelamin) == 'laki-laki' ? 'selected' : '' }}>Laki-laki</option>
+                                        <option value="perempuan" {{ old('jenis_kelamin', optional($ocrData ?? null)->jenis_kelamin) == 'perempuan' ? 'selected' : '' }}>Perempuan</option>
                                     </select>
                                 </div>
 
@@ -203,12 +203,12 @@
                                     </label>
                                     <select id="agama" name="agama" class="form-input" disabled required>
                                         <option value="">-- Pilih Agama --</option>
-                                        <option value="islam">Islam</option>
-                                        <option value="kristen">Kristen</option>
-                                        <option value="katolik">Katolik</option>
-                                        <option value="hindu">Hindu</option>
-                                        <option value="budha">Budha</option>
-                                        <option value="konhucu">Kong Hu Cu</option>
+                                        <option value="islam" {{ old('agama', optional($ocrData ?? null)->agama) == 'islam' ? 'selected' : '' }}>Islam</option>
+                                        <option value="kristen" {{ old('agama', optional($ocrData ?? null)->agama) == 'kristen' ? 'selected' : '' }}>Kristen</option>
+                                        <option value="katolik" {{ old('agama', optional($ocrData ?? null)->agama) == 'katolik' ? 'selected' : '' }}>Katolik</option>
+                                        <option value="hindu" {{ old('agama', optional($ocrData ?? null)->agama) == 'hindu' ? 'selected' : '' }}>Hindu</option>
+                                        <option value="budha" {{ old('agama', optional($ocrData ?? null)->agama) == 'budha' ? 'selected' : '' }}>Budha</option>
+                                        <option value="konhucu" {{ old('agama', optional($ocrData ?? null)->agama) == 'konhucu' ? 'selected' : '' }}>Kong Hu Cu</option>
                                     </select>
                                 </div>
 
@@ -219,10 +219,10 @@
                                     </label>
                                     <select id="status_perkawinan" name="status_perkawinan" class="form-input" disabled required>
                                         <option value="">-- Pilih Status --</option>
-                                        <option value="belum_kawin">Belum Kawin</option>
-                                        <option value="kawin">Kawin</option>
-                                        <option value="cerai_hidup">Cerai Hidup</option>
-                                        <option value="cerai_mati">Cerai Mati</option>
+                                        <option value="belum_kawin" {{ old('status_perkawinan', optional($ocrData ?? null)->status_perkawinan) == 'belum_kawin' ? 'selected' : '' }}>Belum Kawin</option>
+                                        <option value="kawin" {{ old('status_perkawinan', optional($ocrData ?? null)->status_perkawinan) == 'kawin' ? 'selected' : '' }}>Kawin</option>
+                                        <option value="cerai_hidup" {{ old('status_perkawinan', optional($ocrData ?? null)->status_perkawinan) == 'cerai_hidup' ? 'selected' : '' }}>Cerai Hidup</option>
+                                        <option value="cerai_mati" {{ old('status_perkawinan', optional($ocrData ?? null)->status_perkawinan) == 'cerai_mati' ? 'selected' : '' }}>Cerai Mati</option>
                                     </select>
                                 </div>
 
@@ -231,7 +231,7 @@
                                     <label for="pekerjaan" class="form-label">
                                         <i class="fas fa-briefcase"></i> Pekerjaan
                                     </label>
-                                    <input type="text" id="pekerjaan" name="pekerjaan" class="form-input" placeholder="Masukkan pekerjaan" disabled required>
+                                    <input type="text" id="pekerjaan" name="pekerjaan" class="form-input" value="{{ old('pekerjaan', optional($ocrData ?? null)->pekerjaan) }}" placeholder="Masukkan pekerjaan" disabled required>
                                 </div>
 
                                 <!-- Alamat -->
@@ -239,7 +239,7 @@
                                     <label for="alamat" class="form-label">
                                         <i class="fas fa-address-card"></i> Alamat Lengkap
                                     </label>
-                                    <textarea id="alamat" name="alamat" class="form-input" placeholder="Masukkan alamat lengkap" rows="3" disabled required></textarea>
+                                    <textarea id="alamat" name="alamat" class="form-input" placeholder="Masukkan alamat lengkap" rows="3" disabled required>{{ old('alamat', optional($ocrData ?? null)->alamat) }}</textarea>
                                 </div>
 
                                 <!-- RT/RW -->
@@ -247,7 +247,7 @@
                                     <label for="rt" class="form-label">
                                         <i class="fas fa-home"></i> RT/RW
                                     </label>
-                                    <input type="text" id="rt" name="rt" class="form-input" placeholder="RT/RW" maxlength="3" disabled required>
+                                    <input type="text" id="rt" name="rt" class="form-input" value="{{ old('rt', optional($ocrData ?? null)->rt_rw) }}" placeholder="RT/RW" maxlength="3" disabled required>
                                 </div>
 
                                 <!-- Kelurahan/Desa -->
@@ -255,7 +255,7 @@
                                     <label for="kelurahan" class="form-label">
                                         <i class="fas fa-map"></i> Kelurahan/Desa
                                     </label>
-                                    <input type="text" id="kelurahan" name="kelurahan" class="form-input" placeholder="Kelurahan/Desa" disabled required>
+                                    <input type="text" id="kelurahan" name="kelurahan" class="form-input" value="{{ old('kelurahan', optional($ocrData ?? null)->kelurahan) }}" placeholder="Kelurahan/Desa" disabled required>
                                 </div>
 
                                 <!-- Kecamatan -->
@@ -263,7 +263,7 @@
                                     <label for="kecamatan" class="form-label">
                                         <i class="fas fa-map"></i> Kecamatan
                                     </label>
-                                    <input type="text" id="kecamatan" name="kecamatan" class="form-input" placeholder="Kecamatan" disabled required>
+                                    <input type="text" id="kecamatan" name="kecamatan" class="form-input" value="{{ old('kecamatan', optional($ocrData ?? null)->kecamatan) }}" placeholder="Kecamatan" disabled required>
                                 </div>
 
                                 <!-- Kota -->
@@ -271,7 +271,7 @@
                                     <label for="kota" class="form-label">
                                         <i class="fas fa-city"></i> Kota/Kabupaten
                                     </label>
-                                    <input type="text" id="kota" name="kota" class="form-input" placeholder="Kota/Kabupaten" disabled required>
+                                    <input type="text" id="kota" name="kota" class="form-input" value="{{ old('kota', optional($ocrData ?? null)->kota_kabupaten) }}" placeholder="Kota/Kabupaten" disabled required>
                                 </div>
 
                                 <!-- Provinsi -->
@@ -279,7 +279,7 @@
                                     <label for="provinsi" class="form-label">
                                         <i class="fas fa-map-location-dot"></i> Provinsi
                                     </label>
-                                    <input type="text" id="provinsi" name="provinsi" class="form-input" placeholder="Provinsi" disabled required>
+                                    <input type="text" id="provinsi" name="provinsi" class="form-input" value="{{ old('provinsi', optional($ocrData ?? null)->provinsi) }}" placeholder="Provinsi" disabled required>
                                 </div>
 
                                 <!-- No Telepon -->
@@ -584,6 +584,31 @@
                 const state = btnSimpanIdentitas.getAttribute('data-state');
                 
                 if (state === 'simpan') {
+                    // Validasi data kosong
+                    let hasEmpty = false;
+                    let firstEmptyField = null;
+
+                    identitasInputs.forEach(input => {
+                        if (input.name && input.type !== 'hidden') {
+                            if (!input.value.trim()) {
+                                hasEmpty = true;
+                                if (!firstEmptyField) firstEmptyField = input;
+                                input.style.borderColor = 'red'; // Memberi tanda merah pada field yang kosong
+                            } else {
+                                input.style.borderColor = ''; // Menghapus tanda merah jika sudah diisi
+                            }
+                        }
+                    });
+
+                    if (hasEmpty) {
+                        alert('⚠️ Tidak bisa menyimpan data. Semua data identitas harus diisi terlebih dahulu!');
+                        if (firstEmptyField) {
+                            firstEmptyField.focus();
+                            firstEmptyField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        return;
+                    }
+
                     // Kumpulkan data
                     const payload = new FormData();
                     payload.append('_token', dokumenForm.querySelector('input[name="_token"]').value);
