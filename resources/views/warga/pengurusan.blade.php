@@ -75,18 +75,14 @@
                         <div class="form-group-section">
                             <label class="section-label">Pilih Layanan Surat</label>
                             <div class="form-group">
-                                <select name="jenis_surat" class="form-select" required>
-                                    <option value="">-- Pilih Jenis Surat --</option>
-                                    <optgroup label="Administrasi Kependudukan">
-                                        <option value="kelahiran">Surat Keterangan Kelahiran</option>
-                                        <option value="kematian">Surat Keterangan Kematian</option>
-                                        <option value="domisili">Surat Keterangan Domisili</option>
-                                        <option value="nikah">Surat Keterangan Nikah</option>
-                                    </optgroup>
-                                    <optgroup label="Umum">
-                                        <option value="kemiskinan">Surat Keterangan Kemiskinan</option>
-                                    </optgroup>
-                                </select>
+                                <input type="text" list="jenis_surat_list" name="jenis_surat" class="form-input" placeholder="-- Ketik atau Pilih Jenis Surat --" required>
+                                <datalist id="jenis_surat_list">
+                                    <option value="Surat Keterangan Kelahiran">
+                                    <option value="Surat Keterangan Kematian">
+                                    <option value="Surat Keterangan Domisili">
+                                    <option value="Surat Keterangan Nikah">
+                                    <option value="Surat Keterangan Kemiskinan">
+                                </datalist>
                             </div>
                         </div>
 
@@ -404,7 +400,7 @@
         btnLanjut.addEventListener('click', function(e) {
             e.preventDefault();
 
-            const jenisSurat = document.querySelector('select[name="jenis_surat"]');
+            const jenisSurat = document.querySelector('input[name="jenis_surat"]');
             const csrfToken = dokumenForm.querySelector('input[name="_token"]').value;
             const ktpSelected = ktpInput.files.length > 0;
             const kkSelected = kkInput.files.length > 0;
@@ -732,7 +728,43 @@
                     });
 
                 } else if (state === 'kirim') {
-                    alert('Bagian pengajuan (Kirim Pengajuan final) akan dihubungkan pada controller berikutnya.');
+                    const jenisSuratVal = document.querySelector('input[name="jenis_surat"]').value;
+                    if (!jenisSuratVal) {
+                        alert('Silakan pilih atau ketik jenis surat terlebih dahulu.');
+                        return;
+                    }
+
+                    btnSimpanIdentitas.disabled = true;
+                    btnSimpanIdentitas.textContent = 'Mengirim...';
+
+                    const formData = new FormData();
+                    formData.append('_token', dokumenForm.querySelector('input[name="_token"]').value);
+                    formData.append('jenis_surat', jenisSuratVal);
+
+                    fetch('{{ route("warga.pengurusan.kirim-pengajuan") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                        body: formData,
+                    })
+                    .then(async (response) => {
+                        const data = await response.json().catch(() => ({}));
+                        if (!response.ok) throw new Error(data.message || 'Gagal mengirim pengajuan.');
+                        return data;
+                    })
+                    .then((data) => {
+                        alert(data.message || 'Pengajuan surat berhasil dikirim.');
+                        if (data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                        }
+                    })
+                    .catch((error) => {
+                        alert(error.message);
+                        btnSimpanIdentitas.disabled = false;
+                        btnSimpanIdentitas.textContent = 'Kirim Pengajuan';
+                    });
                 }
             });
         }

@@ -1092,6 +1092,158 @@ body {
 }
 
 /* ================================
+   DATA TABLE STYLES
+   ================================ */
+.table-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.table-header h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a472a;
+    margin: 0;
+}
+
+.table-stats {
+    display: flex;
+    gap: 1rem;
+}
+
+.stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.stat-total { background: #f3f4f6; color: #374151; }
+.stat-pending { background: #fff3cd; color: #856404; }
+.stat-completed { background: #d4edda; color: #155724; }
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table thead {
+    background-color: #1a472a;
+    color: white;
+}
+
+.data-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.5px;
+}
+
+.data-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: middle;
+}
+
+.data-table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* ================================
+   SIGNATURE SECTION
+   ================================ */
+.signature-section {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.signature-section h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a472a;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+}
+
+.signature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.signature-item {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fafafa;
+    transition: all 0.2s ease;
+}
+
+.signature-item:hover {
+    background: #f0f7f3;
+    border-color: #1a472a;
+}
+
+.item-icon {
+    font-size: 2rem;
+    color: #1a472a;
+    margin-right: 1.5rem;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.item-content {
+    flex: 1;
+}
+
+.item-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+}
+
+.item-applicant {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.btn-signature {
+    background: #1a472a;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-signature:hover {
+    background: #133620;
+}
+
+/* ================================
    RESPONSIVE DESIGN
    ================================ */
 @media (max-width: 768px) {

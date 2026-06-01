@@ -16,7 +16,7 @@
         <main class="main-content">
             <div class="content-wrapper">
                 <div class="greeting-section">
-                    <h1>Selamat Datang [Nama Warga]</h1>
+                    <h1>Selamat Datang {{ auth()->user()->warga?->nama_warga ?? auth()->user()->name }}</h1>
                 </div>
 
                 <div class="stats-cards">
@@ -26,7 +26,13 @@
                         </div>
                         <div class="stat-info">
                             <p class="stat-label">Status Pengajuan Terakhir</p>
-                            <p class="stat-status">Sedang Diproses</p>
+                            <p class="stat-status">
+                                @if($latestSurat)
+                                    {{ ucfirst($latestSurat->status) }}
+                                @else
+                                    Belum ada pengajuan
+                                @endif
+                            </p>
                         </div>
                     </div>
 
@@ -62,16 +68,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>11 Januari 2026</td>
-                                <td>Surat Keterangan Kemiskinan</td>
-                                <td><span class="status-badge status-pending">Sedang Diproses</span></td>
-                            </tr>
-                            <tr>
-                                <td>Tambahkan data sesuai kebutuhan</td>
-                                <td>-</td>
-                                <td>-</td>
-                            </tr>
+                            @forelse($surats as $surat)
+                                <tr>
+                                    <td>{{ \Carbon\Carbon::parse($surat->tanggal_pengajuan)->translatedFormat('d F Y') }}</td>
+                                    <td>{{ $surat->jenis_surat }}</td>
+                                    <td>
+                                        @php
+                                            $badgeClass = match($surat->status) {
+                                                'menunggu' => 'status-pending',
+                                                'diproses' => 'status-pending',
+                                                'selesai' => 'status-success',
+                                                default => 'status-pending',
+                                            };
+                                        @endphp
+                                        <span class="status-badge {{ $badgeClass }}">{{ ucfirst($surat->status) }}</span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3" style="text-align: center;">Belum ada riwayat aktivitas</td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

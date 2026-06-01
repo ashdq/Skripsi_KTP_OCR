@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Dokumen;
 use App\Models\Ocr;
+use App\Models\Surat;
 use App\Models\User;
 use App\Models\Warga;
 use App\Services\OcrService;
@@ -292,6 +293,39 @@ class DokumenController extends Controller
 
         return response()->json([
             'message' => 'Data identitas berhasil disimpan.',
+        ]);
+    }
+
+    public function kirimPengajuan(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'jenis_surat' => ['required', 'string'],
+        ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+        abort_unless($user instanceof User, 403);
+
+        $warga = $user->warga;
+        if (!$warga) {
+            return response()->json(['message' => 'Data warga tidak ditemukan'], 404);
+        }
+
+        $ocrData = Ocr::where('warga_id', $warga->id)->latest()->first();
+        if (!$ocrData) {
+            return response()->json(['message' => 'Data identitas (OCR) belum diisi. Silakan simpan data identitas terlebih dahulu.'], 400);
+        }
+
+        Surat::create([
+            'jenis_surat' => $validated['jenis_surat'],
+            'status' => 'menunggu',
+            'warga_id' => $warga->id,
+            'ocr_id' => $ocrData->id,
+        ]);
+
+        return response()->json([
+            'message' => 'Pengajuan surat berhasil dikirim.',
+            'redirect_url' => route('dashboard')
         ]);
     }
 }

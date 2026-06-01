@@ -25,18 +25,29 @@
                         <div class="table-stats">
                             <span class="stat-badge stat-total">
                                 <i class="fas fa-file-circle-check"></i>
-                                Total: 7
+                                Total: {{ $total }}
                             </span>
                             <span class="stat-badge stat-pending">
                                 <i class="fas fa-hourglass-half"></i>
-                                Proses: 3
+                                Proses: {{ $proses }}
                             </span>
                             <span class="stat-badge stat-completed">
                                 <i class="fas fa-check-circle"></i>
-                                Selesai: 4
+                                Selesai: {{ $selesai }}
                             </span>
                         </div>
                     </div>
+
+                    @if(session('success'))
+                        <div class="alert-success" style="margin-bottom:1rem; padding:1rem; background-color:#d4edda; color:#155724; border-radius:4px;">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="alert-error" style="margin-bottom:1rem; padding:1rem; background-color:#f8d7da; color:#721c24; border-radius:4px;">
+                            {{ session('error') }}
+                        </div>
+                    @endif
 
                     <table class="data-table">
                         <thead>
@@ -52,14 +63,25 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse($surats as $index => $surat)
                             <tr>
-                                <td>1</td>
-                                <td>Ahmad Dian</td>
-                                <td>3312450123231</td>
-                                <td>Jalan Pisang No 8</td>
-                                <td>Surat Keterangan Kelahiran</td>
-                                <td>10 Januari 2026</td>
-                                <td><span class="status-badge status-pending">Diproses</span></td>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $surat->ocr->nama ?? '-' }}</td>
+                                <td>{{ $surat->ocr->nik ?? '-' }}</td>
+                                <td>{{ $surat->ocr->alamat ?? '-' }}</td>
+                                <td>{{ $surat->jenis_surat }}</td>
+                                <td>{{ \Carbon\Carbon::parse($surat->tanggal_pengajuan)->translatedFormat('d F Y') }}</td>
+                                <td>
+                                    @php
+                                        $badgeClass = match($surat->status) {
+                                            'menunggu' => 'status-pending',
+                                            'diproses' => 'status-pending',
+                                            'selesai' => 'status-completed',
+                                            default => 'status-pending',
+                                        };
+                                    @endphp
+                                    <span class="status-badge {{ $badgeClass }}">{{ ucfirst($surat->status) }}</span>
+                                </td>
                                 <td>
                                     <div class="action-buttons">
                                         <button class="btn-action btn-detail" title="Lihat Detail">
@@ -68,85 +90,23 @@
                                         <button class="btn-action btn-edit" title="Edit">
                                             <i class="fas fa-pencil"></i>
                                         </button>
+                                        @if($surat->status === 'menunggu')
+                                        <form action="{{ route('petugas.pengajuan.proses', $surat->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="btn-action" style="background:#ffc107; color:#000;" title="Proses">
+                                                <i class="fas fa-spinner"></i> Proses
+                                            </button>
+                                        </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
+                            @empty
                             <tr>
-                                <td>2</td>
-                                <td>Siti Nurhaliza</td>
-                                <td>3312450123232</td>
-                                <td>Jalan Mangga No 5</td>
-                                <td>Surat Keterangan Domisili</td>
-                                <td>11 Januari 2026</td>
-                                <td><span class="status-badge status-pending">Diproses</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-detail" title="Lihat Detail">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn-action btn-edit" title="Edit">
-                                            <i class="fas fa-pencil"></i>
-                                        </button>
-                                    </div>
-                                </td>
+                                <td colspan="8" style="text-align: center;">Belum ada pengajuan.</td>
                             </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Budi Santoso</td>
-                                <td>3312450123233</td>
-                                <td>Jalan Jeruk No 12</td>
-                                <td>Surat Keterangan Kemiskinan</td>
-                                <td>12 Januari 2026</td>
-                                <td><span class="status-badge status-completed">Selesai</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-detail" title="Lihat Detail">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn-action btn-edit" title="Edit">
-                                            <i class="fas fa-pencil"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>Rina Wijaya</td>
-                                <td>3312450123234</td>
-                                <td>Jalan Apel No 3</td>
-                                <td>Surat Keterangan Kematian</td>
-                                <td>08 Januari 2026</td>
-                                <td><span class="status-badge status-completed">Selesai</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-detail" title="Lihat Detail">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn-action btn-edit" title="Edit">
-                                            <i class="fas fa-pencil"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>5</td>
-                                <td>Dina Kusmawati</td>
-                                <td>3312450123235</td>
-                                <td>Jalan Nanas No 7</td>
-                                <td>Surat Keterangan Kelahiran</td>
-                                <td>09 Januari 2026</td>
-                                <td><span class="status-badge status-pending">Diproses</span></td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-detail" title="Lihat Detail">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button class="btn-action btn-edit" title="Edit">
-                                            <i class="fas fa-pencil"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

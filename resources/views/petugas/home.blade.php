@@ -17,7 +17,7 @@
         <main class="main-content">
             <div class="content-wrapper">
                 <div class="greeting-section">
-                    <h1>Selamat Datang [Nama Petugas]</h1>
+                    <h1>Selamat Datang {{ auth()->user()->petugas?->nama ?? auth()->user()->name }}</h1>
                 </div>
 
                 <div class="stats-cards">
@@ -27,7 +27,7 @@
                         </div>
                         <div class="stat-info">
                             <p class="stat-label">Total Pengajuan Bulan Ini</p>
-                            <p class="stat-count">7</p>
+                            <p class="stat-count">{{ $totalBulanIni }}</p>
                         </div>
                     </div>
 
@@ -37,7 +37,7 @@
                         </div>
                         <div class="stat-info">
                             <p class="stat-label">Menunggu Tanda Tangan</p>
-                            <p class="stat-count">1</p>
+                            <p class="stat-count">{{ $menungguTtd }}</p>
                         </div>
                     </div>
 
@@ -65,11 +65,12 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse($surats as $surat)
                             <tr>
-                                <td>Ahmad Dian</td>
-                                <td>3312450123231</td>
-                                <td>Jalan Pisang No 8</td>
-                                <td>Surat Keterangan Kelahiran</td>
+                                <td>{{ $surat->ocr->nama ?? '-' }}</td>
+                                <td>{{ $surat->ocr->nik ?? '-' }}</td>
+                                <td>{{ $surat->ocr->alamat ?? '-' }}</td>
+                                <td>{{ $surat->jenis_surat }}</td>
                                 <td>
                                     <div class="action-buttons">
                                         <button class="btn-action btn-detail">Lihat Detail</button>
@@ -77,30 +78,11 @@
                                     </div>
                                 </td>
                             </tr>
+                            @empty
                             <tr>
-                                <td>Siti Nurhaliza</td>
-                                <td>3312450123232</td>
-                                <td>Jalan Mangga No 5</td>
-                                <td>Surat Keterangan Domisili</td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-detail">Lihat Detail</button>
-                                        <button class="btn-action btn-verifikasi">Verifikasi</button>
-                                    </div>
-                                </td>
+                                <td colspan="5" style="text-align: center;">Belum ada pengajuan terbaru</td>
                             </tr>
-                            <tr>
-                                <td>Budi Santoso</td>
-                                <td>3312450123233</td>
-                                <td>Jalan Jeruk No 12</td>
-                                <td>Surat Keterangan Kemiskinan</td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <button class="btn-action btn-detail">Lihat Detail</button>
-                                        <button class="btn-action btn-verifikasi">Verifikasi</button>
-                                    </div>
-                                </td>
-                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
