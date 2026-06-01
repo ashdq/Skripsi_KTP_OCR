@@ -334,6 +334,7 @@
         const btnSimpanIdentitas = document.getElementById('btn-simpan-identitas');
         const hasExistingKtp = @json($hasExistingKtp ?? false);
         const hasExistingKk = @json($hasExistingKk ?? false);
+        const ocrDataDb = @json($ocrData ?? null);
         const previewModal = document.getElementById('preview-modal');
         const previewModalOverlay = document.getElementById('preview-modal-overlay');
         const previewModalClose = document.getElementById('preview-modal-close');
@@ -349,6 +350,46 @@
         }
 
         setIdentitasDisabled(true);
+
+        function saveIdentitasState() {
+            const state = {};
+            identitasInputs.forEach(input => {
+                if (input.name && input.type !== 'hidden') {
+                    state[input.name] = input.value;
+                }
+            });
+            sessionStorage.setItem('identitas_state', JSON.stringify(state));
+        }
+
+        identitasInputs.forEach(input => {
+            input.addEventListener('input', saveIdentitasState);
+            input.addEventListener('change', saveIdentitasState);
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (sessionStorage.getItem('pengurusan_step') === 'identitas') {
+                uploadStep.classList.add('hidden');
+                identitasSection.classList.remove('hidden');
+                setIdentitasDisabled(false);
+                setTimeout(() => {
+                    identitasSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+
+                const savedState = sessionStorage.getItem('identitas_state');
+                if (savedState) {
+                    try {
+                        const state = JSON.parse(savedState);
+                        identitasInputs.forEach(input => {
+                            if (input.name && state[input.name] !== undefined) {
+                                if (!input.value) {
+                                    input.value = state[input.name];
+                                }
+                            }
+                        });
+                    } catch(e) {}
+                }
+            }
+        });
 
         // Update filename when file is selected
         ktpInput.addEventListener('change', function(e) {
@@ -393,6 +434,34 @@
                 uploadStep.classList.add('hidden');
                 identitasSection.classList.remove('hidden');
                 setIdentitasDisabled(false);
+                sessionStorage.setItem('pengurusan_step', 'identitas');
+
+                // --- Fallback Auto-fill dari DB ---
+                if (ocrDataDb) {
+                    const dbMap = {
+                        'nama': ocrDataDb.nama,
+                        'nik': ocrDataDb.nik,
+                        'nomor_kk': ocrDataDb.nomor_kk,
+                        'tempat_lahir': ocrDataDb.tempat_lahir,
+                        'tanggal_lahir': ocrDataDb.tanggal_lahir,
+                        'jenis_kelamin': ocrDataDb.jenis_kelamin,
+                        'agama': ocrDataDb.agama,
+                        'status_perkawinan': ocrDataDb.status_perkawinan,
+                        'pekerjaan': ocrDataDb.pekerjaan,
+                        'alamat': ocrDataDb.alamat,
+                        'rt': ocrDataDb.rt_rw,
+                        'kelurahan': ocrDataDb.kelurahan,
+                        'kecamatan': ocrDataDb.kecamatan,
+                        'kota': ocrDataDb.kota_kabupaten,
+                        'provinsi': ocrDataDb.provinsi
+                    };
+                    for (const [key, val] of Object.entries(dbMap)) {
+                        const el = document.getElementById(key);
+                        if (el && val && !el.value) {
+                            el.value = val;
+                        }
+                    }
+                }
 
                 setTimeout(() => {
                     identitasSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -445,6 +514,7 @@
                     uploadStep.classList.add('hidden');
                     identitasSection.classList.remove('hidden');
                     setIdentitasDisabled(false);
+                    sessionStorage.setItem('pengurusan_step', 'identitas');
 
                     // --- Auto-fill form dari hasil OCR ---
                     if (data.ocr_fields) {
@@ -539,6 +609,7 @@
                         }
 
                         console.log('OCR auto-fill selesai:', f);
+                        saveIdentitasState();
                     }
 
                     const successMessage = document.querySelector('.alert-success');
@@ -572,6 +643,8 @@
             uploadStep.classList.remove('hidden');
             identitasSection.classList.add('hidden');
             setIdentitasDisabled(true);
+            sessionStorage.removeItem('pengurusan_step');
+            sessionStorage.removeItem('identitas_state');
 
             // Smooth scroll to top
             setTimeout(() => {
@@ -643,6 +716,7 @@
                         messageBox.className = 'alert-success';
                         messageBox.textContent = data.message || 'Data identitas berhasil disimpan.';
                         dokumenForm.parentElement.insertBefore(messageBox, dokumenForm);
+                        sessionStorage.removeItem('identitas_state');
 
                         // Ubah tombol jadi Kirim Pengajuan
                         btnSimpanIdentitas.setAttribute('data-state', 'kirim');

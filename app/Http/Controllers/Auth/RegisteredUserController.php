@@ -47,7 +47,7 @@ class RegisteredUserController extends Controller
             ]);
 
             Warga::create([
-                'nama' => $request->nama,
+                'nama_warga' => $request->nama,
                 'nomor_hp' => $request->nomor_hp,
                 'user_id' => $user->id,
             ]);

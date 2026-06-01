@@ -60,7 +60,7 @@ class ProfileController extends Controller
                 Warga::updateOrCreate(
                     ['user_id' => $user->id],
                     [
-                        'nama' => $validated['nama'],
+                        'nama_warga' => $validated['nama'],
                         'nomor_hp' => $validated['nomor_hp'],
                     ]
                 );
