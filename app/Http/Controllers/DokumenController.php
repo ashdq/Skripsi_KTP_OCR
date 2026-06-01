@@ -134,47 +134,11 @@ class DokumenController extends Controller
             }
 
             if ($ktpAbsPath && $kkAbsPath && file_exists($ktpAbsPath) && file_exists($kkAbsPath)) {
+                // --- OCR Processing ---
+                // Do not save to DB here, just return the fields for frontend to autofill
                 $ocrService = new OcrService();
                 $ocrResult = $ocrService->processKtpAndKk($ktpAbsPath, $kkAbsPath);
                 $ocrFields = $ocrResult['fields'] ?? [];
-
-                // Konversi tanggal_lahir ke format Y-m-d untuk database date column
-                $tanggalLahirDb = null;
-                if (!empty($ocrFields['tanggal_lahir'])) {
-                    $tgl = $ocrFields['tanggal_lahir'];
-                    // Format dari OCR: dd-mm-yyyy
-                    $parts = preg_split('/[-\/]/', $tgl);
-                    if (count($parts) === 3) {
-                        $tanggalLahirDb = $parts[2] . '-' . $parts[1] . '-' . $parts[0];
-                    }
-                }
-
-                // Simpan ke database
-                Ocr::updateOrCreate(
-                    ['dokumen_id' => $dokumen->id],
-                    array_filter([
-                        'nik' => $ocrFields['nik'] ?? null,
-                        'nama' => $ocrFields['nama'] ?? null,
-                        'nomor_kk' => $ocrFields['nomor_kk'] ?? null,
-                        'tempat_lahir' => $ocrFields['tempat_lahir'] ?? null,
-                        'tanggal_lahir' => $tanggalLahirDb,
-                        'jenis_kelamin' => $ocrFields['jenis_kelamin'] ?? null,
-                        'gol_darah' => $ocrFields['gol_darah'] ?? null,
-                        'alamat' => $ocrFields['alamat'] ?? null,
-                        'rt_rw' => $ocrFields['rt_rw'] ?? null,
-                        'kelurahan' => $ocrFields['kelurahan'] ?? null,
-                        'kecamatan' => $ocrFields['kecamatan'] ?? null,
-                        'kota_kabupaten' => $ocrFields['kota_kabupaten'] ?? null,
-                        'provinsi' => $ocrFields['provinsi'] ?? null,
-                        'agama' => $ocrFields['agama'] ?? null,
-                        'status_perkawinan' => $ocrFields['status_perkawinan'] ?? null,
-                        'pekerjaan' => $ocrFields['pekerjaan'] ?? null,
-                        'warga_id' => $warga->id,
-                        'dokumen_id' => $dokumen->id,
-                    ], fn($v) => $v !== null)
-                );
-
-                Log::info('[OCR] Hasil OCR berhasil disimpan untuk warga_id: ' . $warga->id);
             } else {
                 Log::warning('[OCR] File KTP/KK tidak ditemukan untuk OCR processing');
             }
@@ -258,5 +222,72 @@ class DokumenController extends Controller
         }
 
         $disk->putFileAs($directory, $file, $baseName . '.' . $extension);
+    }
+
+    public function saveIdentitas(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'nama' => ['nullable', 'string'],
+            'nik' => ['nullable', 'string'],
+            'nomor_kk' => ['nullable', 'string'],
+            'tempat_lahir' => ['nullable', 'string'],
+            'tanggal_lahir' => ['nullable', 'date'],
+            'jenis_kelamin' => ['nullable', 'string'],
+            'agama' => ['nullable', 'string'],
+            'status_perkawinan' => ['nullable', 'string'],
+            'pekerjaan' => ['nullable', 'string'],
+            'alamat' => ['nullable', 'string'],
+            'rt' => ['nullable', 'string'],
+            'kelurahan' => ['nullable', 'string'],
+            'kecamatan' => ['nullable', 'string'],
+            'kota' => ['nullable', 'string'],
+            'provinsi' => ['nullable', 'string'],
+            'no_telepon' => ['nullable', 'string'],
+        ]);
+
+        /** @var User $user */
+        $user = Auth::user();
+        abort_unless($user instanceof User, 403);
+
+        $warga = $user->warga;
+        if (!$warga) {
+            return response()->json(['message' => 'Data warga tidak ditemukan'], 404);
+        }
+
+        $dokumen = Dokumen::where('warga_id', $warga->id)->first();
+        if (!$dokumen) {
+            return response()->json(['message' => 'Silakan upload dokumen terlebih dahulu'], 400);
+        }
+
+        Ocr::updateOrCreate(
+            ['dokumen_id' => $dokumen->id],
+            [
+                'warga_id' => $warga->id,
+                'dokumen_id' => $dokumen->id,
+                'nik' => $validated['nik'] ?? null,
+                'nama' => $validated['nama'] ?? null,
+                'nomor_kk' => $validated['nomor_kk'] ?? null,
+                'tempat_lahir' => $validated['tempat_lahir'] ?? null,
+                'tanggal_lahir' => $validated['tanggal_lahir'] ?? null,
+                'jenis_kelamin' => $validated['jenis_kelamin'] ?? null,
+                'alamat' => $validated['alamat'] ?? null,
+                'rt_rw' => $validated['rt'] ?? null,
+                'kelurahan' => $validated['kelurahan'] ?? null,
+                'kecamatan' => $validated['kecamatan'] ?? null,
+                'kota_kabupaten' => $validated['kota'] ?? null,
+                'provinsi' => $validated['provinsi'] ?? null,
+                'agama' => $validated['agama'] ?? null,
+                'status_perkawinan' => $validated['status_perkawinan'] ?? null,
+                'pekerjaan' => $validated['pekerjaan'] ?? null,
+            ]
+        );
+
+        if (!empty($validated['no_telepon'])) {
+            $warga->update(['nomor_hp' => $validated['no_telepon']]);
+        }
+
+        return response()->json([
+            'message' => 'Data identitas berhasil disimpan.',
+        ]);
     }
 }

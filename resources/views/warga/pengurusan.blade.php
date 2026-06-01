@@ -294,7 +294,7 @@
                             <!-- Form Actions -->
                             <div class="form-actions-identitas">
                                 <button type="button" class="btn-batal" id="btn-batal">Batal</button>
-                                <button type="button" class="btn-submit" id="btn-simpan-identitas">Kirim Pengajuan</button>
+                                <button type="button" class="btn-submit" id="btn-simpan-identitas" data-state="simpan">Simpan Data</button>
                             </div>
                     </div>
                     </form>
@@ -581,7 +581,62 @@
 
         if (btnSimpanIdentitas) {
             btnSimpanIdentitas.addEventListener('click', function() {
-                alert('Bagian penyimpanan identitas akan dihubungkan pada controller berikutnya.');
+                const state = btnSimpanIdentitas.getAttribute('data-state');
+                
+                if (state === 'simpan') {
+                    // Kumpulkan data
+                    const payload = new FormData();
+                    payload.append('_token', dokumenForm.querySelector('input[name="_token"]').value);
+                    
+                    identitasInputs.forEach(input => {
+                        if (input.name && input.value !== undefined) {
+                            payload.append(input.name, input.value);
+                        }
+                    });
+
+                    btnSimpanIdentitas.disabled = true;
+                    btnSimpanIdentitas.textContent = 'Menyimpan...';
+
+                    fetch('{{ route("warga.pengurusan.simpan-identitas") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                        body: payload,
+                    })
+                    .then(async (response) => {
+                        const data = await response.json().catch(() => ({}));
+                        if (!response.ok) throw new Error(data.message || 'Gagal menyimpan data.');
+                        return data;
+                    })
+                    .then((data) => {
+                        // Tampilkan success message
+                        const successMessage = document.querySelector('.alert-success');
+                        if (successMessage) successMessage.remove();
+                        const messageBox = document.createElement('div');
+                        messageBox.className = 'alert-success';
+                        messageBox.textContent = data.message || 'Data identitas berhasil disimpan.';
+                        dokumenForm.parentElement.insertBefore(messageBox, dokumenForm);
+
+                        // Ubah tombol jadi Kirim Pengajuan
+                        btnSimpanIdentitas.setAttribute('data-state', 'kirim');
+                        btnSimpanIdentitas.textContent = 'Kirim Pengajuan';
+                        btnSimpanIdentitas.classList.add('btn-success'); // Opsional: tambah class styling
+                    })
+                    .catch((error) => {
+                        alert(error.message);
+                    })
+                    .finally(() => {
+                        btnSimpanIdentitas.disabled = false;
+                        if (btnSimpanIdentitas.getAttribute('data-state') === 'simpan') {
+                            btnSimpanIdentitas.textContent = 'Simpan Data';
+                        }
+                    });
+
+                } else if (state === 'kirim') {
+                    alert('Bagian pengajuan (Kirim Pengajuan final) akan dihubungkan pada controller berikutnya.');
+                }
             });
         }
 

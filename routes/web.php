@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/warga/pengurusan', [DokumenController::class, 'pengurusan'])->name('warga.pengurusan');
 
     Route::post('/warga/pengurusan/submit', [DokumenController::class, 'upload'])->name('warga.pengurusan.submit');
+    Route::post('/warga/pengurusan/simpan-identitas', [DokumenController::class, 'saveIdentitas'])->name('warga.pengurusan.simpan-identitas');
 
     Route::get('/warga/pengurusan/dokumen/{type}/preview', [DokumenController::class, 'previewDocument'])
         ->whereIn('type', ['ktp', 'kk'])
