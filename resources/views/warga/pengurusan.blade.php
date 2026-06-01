@@ -446,6 +446,101 @@
                     identitasSection.classList.remove('hidden');
                     setIdentitasDisabled(false);
 
+                    // --- Auto-fill form dari hasil OCR ---
+                    if (data.ocr_fields) {
+                        const f = data.ocr_fields;
+
+                        // Text inputs: mapping field OCR -> ID input form
+                        const textMap = {
+                            'nama': 'nama',
+                            'nik': 'nik',
+                            'nomor_kk': 'nomor_kk',
+                            'tempat_lahir': 'tempat_lahir',
+                            'pekerjaan': 'pekerjaan',
+                            'alamat': 'alamat',
+                            'rt_rw': 'rt',
+                            'kelurahan': 'kelurahan',
+                            'kecamatan': 'kecamatan',
+                            'kota_kabupaten': 'kota',
+                            'provinsi': 'provinsi',
+                        };
+
+                        for (const [ocrKey, inputId] of Object.entries(textMap)) {
+                            if (f[ocrKey]) {
+                                const el = document.getElementById(inputId);
+                                if (el) el.value = f[ocrKey];
+                            }
+                        }
+
+                        // Tanggal lahir -> input type="date" (perlu format yyyy-mm-dd)
+                        if (f.tanggal_lahir) {
+                            const parts = f.tanggal_lahir.split('-');
+                            if (parts.length === 3) {
+                                // OCR returns dd-mm-yyyy, date input needs yyyy-mm-dd
+                                const formatted = parts[2] + '-' + parts[1].padStart(2, '0') + '-' + parts[0].padStart(2, '0');
+                                const tglEl = document.getElementById('tanggal_lahir');
+                                if (tglEl) tglEl.value = formatted;
+                            }
+                        }
+
+                        // Select: Jenis Kelamin
+                        if (f.jenis_kelamin) {
+                            const jkEl = document.getElementById('jenis_kelamin');
+                            if (jkEl) {
+                                const jkVal = f.jenis_kelamin.toLowerCase().replace(/\s+/g, '-');
+                                // Match: "LAKI-LAKI" -> "laki-laki", "PEREMPUAN" -> "perempuan"
+                                for (const opt of jkEl.options) {
+                                    if (opt.value === jkVal) {
+                                        jkEl.value = jkVal;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Select: Agama
+                        if (f.agama) {
+                            const agamaEl = document.getElementById('agama');
+                            if (agamaEl) {
+                                const agamaVal = f.agama.toLowerCase();
+                                const agamaMap = {
+                                    'islam': 'islam',
+                                    'kristen': 'kristen',
+                                    'katolik': 'katolik',
+                                    'hindu': 'hindu',
+                                    'buddha': 'budha',
+                                    'budha': 'budha',
+                                    'konghucu': 'konhucu',
+                                    'kong hu cu': 'konhucu',
+                                };
+                                const mapped = agamaMap[agamaVal] || agamaVal;
+                                for (const opt of agamaEl.options) {
+                                    if (opt.value === mapped) {
+                                        agamaEl.value = mapped;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Select: Status Perkawinan
+                        if (f.status_perkawinan) {
+                            const spEl = document.getElementById('status_perkawinan');
+                            if (spEl) {
+                                const spVal = f.status_perkawinan.toLowerCase().replace(/\s+/g, '_');
+                                // Match: "BELUM KAWIN" -> "belum_kawin", "KAWIN" -> "kawin"
+                                for (const opt of spEl.options) {
+                                    if (opt.value === spVal) {
+                                        spEl.value = spVal;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        console.log('OCR auto-fill selesai:', f);
+                    }
+
                     const successMessage = document.querySelector('.alert-success');
                     if (successMessage) {
                         successMessage.remove();

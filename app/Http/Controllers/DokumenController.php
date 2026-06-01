@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Dokumen;
+use App\Models\Ocr;
 use App\Models\User;
 use App\Models\Warga;
+use App\Services\OcrService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -110,18 +113,81 @@ class DokumenController extends Controller
             return back()->withErrors(['kk' => 'File KK wajib diupload minimal satu kali.']);
         }
 
-        Dokumen::updateOrCreate(
+        $dokumen = Dokumen::updateOrCreate(
             ['warga_id' => $warga->id],
             [
                 'warga_id' => $warga->id,
             ]
         );
 
+        // --- OCR Processing ---
+        $ocrFields = [];
+        try {
+            $ktpAbsPath = null;
+            $kkAbsPath = null;
+
+            if ($finalDocuments['ktp']) {
+                $ktpAbsPath = storage_path('app/public/' . $finalDocuments['ktp']['path']);
+            }
+            if ($finalDocuments['kk']) {
+                $kkAbsPath = storage_path('app/public/' . $finalDocuments['kk']['path']);
+            }
+
+            if ($ktpAbsPath && $kkAbsPath && file_exists($ktpAbsPath) && file_exists($kkAbsPath)) {
+                $ocrService = new OcrService();
+                $ocrResult = $ocrService->processKtpAndKk($ktpAbsPath, $kkAbsPath);
+                $ocrFields = $ocrResult['fields'] ?? [];
+
+                // Konversi tanggal_lahir ke format Y-m-d untuk database date column
+                $tanggalLahirDb = null;
+                if (!empty($ocrFields['tanggal_lahir'])) {
+                    $tgl = $ocrFields['tanggal_lahir'];
+                    // Format dari OCR: dd-mm-yyyy
+                    $parts = preg_split('/[-\/]/', $tgl);
+                    if (count($parts) === 3) {
+                        $tanggalLahirDb = $parts[2] . '-' . $parts[1] . '-' . $parts[0];
+                    }
+                }
+
+                // Simpan ke database
+                Ocr::updateOrCreate(
+                    ['dokumen_id' => $dokumen->id],
+                    array_filter([
+                        'nik' => $ocrFields['nik'] ?? null,
+                        'nama' => $ocrFields['nama'] ?? null,
+                        'nomor_kk' => $ocrFields['nomor_kk'] ?? null,
+                        'tempat_lahir' => $ocrFields['tempat_lahir'] ?? null,
+                        'tanggal_lahir' => $tanggalLahirDb,
+                        'jenis_kelamin' => $ocrFields['jenis_kelamin'] ?? null,
+                        'gol_darah' => $ocrFields['gol_darah'] ?? null,
+                        'alamat' => $ocrFields['alamat'] ?? null,
+                        'rt_rw' => $ocrFields['rt_rw'] ?? null,
+                        'kelurahan' => $ocrFields['kelurahan'] ?? null,
+                        'kecamatan' => $ocrFields['kecamatan'] ?? null,
+                        'kota_kabupaten' => $ocrFields['kota_kabupaten'] ?? null,
+                        'provinsi' => $ocrFields['provinsi'] ?? null,
+                        'agama' => $ocrFields['agama'] ?? null,
+                        'status_perkawinan' => $ocrFields['status_perkawinan'] ?? null,
+                        'pekerjaan' => $ocrFields['pekerjaan'] ?? null,
+                        'warga_id' => $warga->id,
+                        'dokumen_id' => $dokumen->id,
+                    ], fn($v) => $v !== null)
+                );
+
+                Log::info('[OCR] Hasil OCR berhasil disimpan untuk warga_id: ' . $warga->id);
+            } else {
+                Log::warning('[OCR] File KTP/KK tidak ditemukan untuk OCR processing');
+            }
+        } catch (\Exception $e) {
+            Log::error('[OCR] Error saat OCR processing: ' . $e->getMessage());
+        }
+
         if ($request->expectsJson()) {
             return response()->json([
                 'message' => 'Dokumen KTP dan KK berhasil diunggah.',
                 'ktp' => $finalDocuments['ktp']['url'] ?? null,
                 'kk' => $finalDocuments['kk']['url'] ?? null,
+                'ocr_fields' => $ocrFields,
             ]);
         }
 
