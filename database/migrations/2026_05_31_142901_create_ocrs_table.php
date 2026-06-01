@@ -33,8 +33,9 @@ return new class extends Migration
             $table->unsignedBigInteger('warga_id')->nullable();
             $table->timestamps();
 
-            $table->foreign('dokumen_id')->references('id')->on('dokumen')->onDelete('cascade');
-            $table->foreign('warga_id')->references('id')->on('warga')->onDelete('cascade');
+           
+            $table->foreign('dokumen_id')->references('id')->on('dokumens')->onDelete('cascade');
+            $table->foreign('warga_id')->references('id')->on('wargas')->onDelete('cascade');
         });
     }
 
