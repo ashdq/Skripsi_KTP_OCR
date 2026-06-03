@@ -84,9 +84,9 @@
                                 </td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="btn-action btn-detail" title="Lihat Detail">
+                                        <a href="{{ route('petugas.pengajuan.detail', $surat->id) }}" class="btn-action btn-detail" title="Lihat Detail" style="display:inline-flex; align-items:center; justify-content:center; text-decoration:none;">
                                             <i class="fas fa-eye"></i>
-                                        </button>
+                                        </a>
                                         <button class="btn-action btn-edit" title="Edit">
                                             <i class="fas fa-pencil"></i>
                                         </button>

@@ -73,7 +73,7 @@
                                 <td>{{ $surat->jenis_surat }}</td>
                                 <td>
                                     <div class="action-buttons">
-                                        <button class="btn-action btn-detail">Lihat Detail</button>
+                                        <a href="{{ route('petugas.pengajuan.detail', $surat->id) }}" class="btn-action btn-detail" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">Lihat Detail</a>
                                         <button class="btn-action btn-verifikasi">Verifikasi</button>
                                     </div>
                                 </td>

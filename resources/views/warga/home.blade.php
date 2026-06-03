@@ -65,6 +65,7 @@
                                 <th>Tanggal</th>
                                 <th>Jenis Surat</th>
                                 <th>Status Pengajuan</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -77,16 +78,27 @@
                                             $badgeClass = match($surat->status) {
                                                 'menunggu' => 'status-pending',
                                                 'diproses' => 'status-pending',
-                                                'selesai' => 'status-success',
-                                                default => 'status-pending',
+                                                'selesai'  => 'status-approved',
+                                                default    => 'status-pending',
                                             };
                                         @endphp
                                         <span class="status-badge {{ $badgeClass }}">{{ ucfirst($surat->status) }}</span>
                                     </td>
+                                    <td>
+                                        @if($surat->status === 'selesai' && $surat->file_surat)
+                                            <a href="{{ route('warga.surat.unduh', $surat->id) }}"
+                                               style="display:inline-flex; align-items:center; gap:0.4rem; padding:0.45rem 1rem; background:#1a472a; color:#fff; border-radius:7px; text-decoration:none; font-size:0.82rem; font-weight:700; transition:all 0.2s;"
+                                               title="Unduh Surat">
+                                                <i class="fas fa-download"></i> Unduh Surat
+                                            </a>
+                                        @else
+                                            <span style="color:#bbb; font-size:0.82rem;">-</span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" style="text-align: center;">Belum ada riwayat aktivitas</td>
+                                    <td colspan="4" style="text-align: center;">Belum ada riwayat aktivitas</td>
                                 </tr>
                             @endforelse
                         </tbody>
