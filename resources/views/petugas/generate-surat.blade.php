@@ -494,12 +494,12 @@
         <main class="generate-wrapper">
             {{-- Page Header --}}
             <div class="generate-header">
-                <a href="{{ route('petugas.tanda-tangan') }}" style="color:#1a472a; text-decoration:none; font-size:1.3rem;">
+                <a href="{{ route('petugas.daftar') }}" style="color:#1a472a; text-decoration:none; font-size:1.3rem;">
                     <i class="fas fa-arrow-left"></i>
                 </a>
                 <h1>
-                    <i class="fas fa-eye"></i>
-                    Preview &amp; Edit Surat
+                    <i class="fas fa-file-medical"></i>
+                    Generate & Edit Surat
                 </h1>
             </div>
 
@@ -532,8 +532,8 @@
                     <button class="btn-toolbar btn-pdf-download" onclick="window.print()">
                         <i class="fas fa-file-pdf"></i> Cetak PDF
                     </button>
-                    <button class="btn-toolbar btn-finalize" onclick="showFinalizeModal()">
-                        <i class="fas fa-pen-fancy"></i> Tanda Tangan &amp; Selesai
+                    <button class="btn-toolbar btn-finalize" onclick="showFinalizeModal()" style="background:linear-gradient(135deg,#1a472a,#2e7d52);">
+                        <i class="fas fa-arrow-right"></i> Lanjut Tanda Tangan
                     </button>
                 </div>
             </div>
@@ -640,22 +640,17 @@
     <div class="finalize-overlay" id="finalize-overlay">
         <div class="finalize-card">
             <div class="finalize-icon">
-                <i class="fas fa-pen-fancy"></i>
+                <i class="fas fa-pen-nib" style="color:#1a472a;"></i>
             </div>
-            <h3>Konfirmasi Tanda Tangan</h3>
-            <p>Apakah Anda yakin ingin menandatangani dan menyelesaikan surat ini? Status surat akan berubah menjadi <strong>Selesai</strong> dan warga dapat mengunduhnya.</p>
+            <h3>Lanjut ke Tanda Tangan?</h3>
+            <p>Surat telah di-generate. Anda akan diarahkan ke halaman <strong>Tanda Tangan</strong> untuk menandatangani surat ini secara digital.</p>
             <div class="finalize-actions">
                 <button class="btn-cancel-modal" onclick="closeFinalizeModal()">
                     <i class="fas fa-times"></i> Batal
                 </button>
-                <form action="{{ route('petugas.pengajuan.tandatangan', $surat->id) }}" method="POST" id="finalize-form">
-                    @csrf
-                    {{-- Hidden field untuk mengirim konten surat yang sudah diedit --}}
-                    <input type="hidden" name="konten_surat" id="hidden-konten">
-                    <button type="submit" class="btn-confirm" onclick="prepareFinalize()">
-                        <i class="fas fa-check"></i> Ya, Tanda Tangan
-                    </button>
-                </form>
+                <a href="{{ route('petugas.tanda-tangan') }}" class="btn-confirm" style="text-decoration:none;">
+                    <i class="fas fa-arrow-right"></i> Ya, Lanjutkan
+                </a>
             </div>
         </div>
     </div>

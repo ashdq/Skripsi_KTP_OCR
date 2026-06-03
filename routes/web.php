@@ -66,8 +66,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/petugas/daftar', function () {
         $surats = \App\Models\Surat::with('ocr')->latest()->get();
-        $total = $surats->count();
-        $proses = $surats->where('status', 'diproses')->count();
+        $total   = $surats->count();
+        $proses  = $surats->whereIn('status', ['menunggu', 'diproses'])->count();
         $selesai = $surats->where('status', 'selesai')->count();
         
         return view('petugas.daftar-pengajuan', compact('surats', 'total', 'proses', 'selesai'));
@@ -94,34 +94,69 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('petugas.daftar')->with('error', 'Akses ditolak.');
     })->name('petugas.pengajuan.detail');
 
-    Route::get('/petugas/tanda-tangan', function () {
-        $surats = \App\Models\Surat::with('ocr')->where('status', 'diproses')->latest()->get();
-        return view('petugas.tanda-tangan', compact('surats'));
+    // Halaman daftar surat siap tanda tangan (status diproses) & sudah selesai
+    Route::get('/petugas/tanda-tangan', function (\Illuminate\Http\Request $request) {
+        $filter = $request->query('filter', 'menunggu');
+
+        $query = \App\Models\Surat::with('ocr')->whereIn('status', ['diproses', 'selesai'])->latest();
+        
+        $countMenunggu = \App\Models\Surat::where('status', 'diproses')->count();
+        $countSelesai  = \App\Models\Surat::where('status', 'selesai')->count();
+
+        if ($filter === 'menunggu') {
+            $query->where('status', 'diproses');
+        } elseif ($filter === 'selesai') {
+            $query->where('status', 'selesai');
+        }
+
+        $surats = $query->get();
+        return view('petugas.tanda-tangan', compact('surats', 'filter', 'countMenunggu', 'countSelesai'));
     })->name('petugas.tanda-tangan');
 
-    // Halaman Preview & Edit Surat per pengajuan
+    // Halaman Preview & Edit Surat (dari daftar pengajuan, status menunggu atau diproses)
     Route::get('/petugas/pengajuan/{surat}/generate', function (\App\Models\Surat $surat) {
         $user = Auth::user();
-        if ($user && $user->petugas && $surat->status === 'diproses') {
+        if ($user && $user->petugas && in_array($surat->status, ['menunggu', 'diproses'])) {
+            // Ubah status ke diproses saat pertama dibuka generate
+            if ($surat->status === 'menunggu') {
+                $surat->update(['status' => 'diproses', 'petugas_id' => $user->petugas->id]);
+            }
             $surat->load('ocr');
             return view('petugas.generate-surat', compact('surat'));
         }
-        return redirect()->route('petugas.tanda-tangan')->with('error', 'Surat tidak valid atau bukan dalam status diproses.');
+        return redirect()->route('petugas.daftar')->with('error', 'Surat tidak valid.');
     })->name('petugas.pengajuan.generate');
 
-    // Proses tanda tangan & generate PDF
+    // Halaman tanda tangan detail per surat (dari halaman tanda-tangan)
+    Route::get('/petugas/pengajuan/{surat}/tanda-tangan', function (\App\Models\Surat $surat) {
+        $user = Auth::user();
+        if ($user && $user->petugas && $surat->status === 'diproses') {
+            $surat->load('ocr', 'petugas', 'warga');
+            return view('petugas.tanda-tangan-surat', compact('surat'));
+        }
+        return redirect()->route('petugas.tanda-tangan')->with('error', 'Surat tidak valid.');
+    })->name('petugas.pengajuan.ttd.page');
+
+    // Proses tanda tangan & generate PDF final
     Route::post('/petugas/pengajuan/{surat}/tandatangan', function (\App\Models\Surat $surat) {
         $user = Auth::user();
         if ($user && $user->petugas && $surat->status === 'diproses') {
             $surat->load('ocr');
 
-            // Generate PDF dari template
-            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('surat.template', ['surat' => $surat])
-                ->setPaper('a4', 'portrait');
+            // Ambil data signature dari request
+            $signatureData = request('signature_data'); // base64 PNG
+            $lokasi        = request('lokasi', 'Talun');
 
-            $fileName    = 'surat_' . $surat->id . '_' . time() . '.pdf';
-            $dir         = storage_path('app/public/surat');
-            $fullPath    = $dir . '/' . $fileName;
+            // Generate PDF dari template
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('surat.template', [
+                'surat'         => $surat,
+                'signature_data'=> $signatureData,
+                'lokasi_ttd'    => $lokasi,
+            ])->setPaper('a4', 'portrait');
+
+            $fileName = 'surat_' . $surat->id . '_' . time() . '.pdf';
+            $dir      = storage_path('app/public/surat');
+            $fullPath = $dir . '/' . $fileName;
 
             if (!is_dir($dir)) { mkdir($dir, 0755, true); }
             file_put_contents($fullPath, $pdf->output());
@@ -132,10 +167,22 @@ Route::middleware('auth')->group(function () {
             ]);
 
             return redirect()->route('petugas.tanda-tangan')
-                ->with('success', 'Surat berhasil ditandatangani dan di-generate. Warga sekarang dapat mengunduh surat tersebut.');
+                ->with('success', 'Surat berhasil ditandatangani dan di-generate. Warga dapat mengunduhnya.');
         }
         return back()->with('error', 'Akses ditolak atau status surat tidak valid.');
     })->name('petugas.pengajuan.tandatangan');
+
+    // Petugas lihat PDF surat yang sudah selesai
+    Route::get('/petugas/pengajuan/{surat}/pdf', function (\App\Models\Surat $surat) {
+        $user = Auth::user();
+        if ($user && $user->petugas && $surat->status === 'selesai' && $surat->file_surat) {
+            $filePath = storage_path('app/public/surat/' . $surat->file_surat);
+            if (file_exists($filePath)) {
+                return response()->file($filePath);
+            }
+        }
+        return back()->with('error', 'File surat tidak ditemukan.');
+    })->name('petugas.pengajuan.pdf');
 
     // Warga unduh surat yang sudah selesai
     Route::get('/warga/surat/{surat}/unduh', function (\App\Models\Surat $surat) {

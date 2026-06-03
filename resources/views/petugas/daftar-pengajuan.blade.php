@@ -29,7 +29,7 @@
                             </span>
                             <span class="stat-badge stat-pending">
                                 <i class="fas fa-hourglass-half"></i>
-                                Proses: {{ $proses }}
+                                Diproses: {{ $proses }}
                             </span>
                             <span class="stat-badge stat-completed">
                                 <i class="fas fa-check-circle"></i>
@@ -39,13 +39,13 @@
                     </div>
 
                     @if(session('success'))
-                        <div class="alert-success" style="margin-bottom:1rem; padding:1rem; background-color:#d4edda; color:#155724; border-radius:4px;">
-                            {{ session('success') }}
+                        <div class="alert-success" style="margin-bottom:1rem; padding:1rem; background-color:#d4edda; color:#155724; border-radius:8px; display:flex; align-items:center; gap:0.5rem;">
+                            <i class="fas fa-check-circle"></i> {{ session('success') }}
                         </div>
                     @endif
                     @if(session('error'))
-                        <div class="alert-error" style="margin-bottom:1rem; padding:1rem; background-color:#f8d7da; color:#721c24; border-radius:4px;">
-                            {{ session('error') }}
+                        <div class="alert-error" style="margin-bottom:1rem; padding:1rem; background-color:#f8d7da; color:#721c24; border-radius:8px; display:flex; align-items:center; gap:0.5rem;">
+                            <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
                         </div>
                     @endif
 
@@ -55,7 +55,6 @@
                                 <th>No</th>
                                 <th>Nama Pengaju</th>
                                 <th>NIK</th>
-                                <th>Alamat</th>
                                 <th>Jenis Surat</th>
                                 <th>Tanggal Pengajuan</th>
                                 <th>Status</th>
@@ -68,43 +67,60 @@
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $surat->ocr->nama ?? '-' }}</td>
                                 <td>{{ $surat->ocr->nik ?? '-' }}</td>
-                                <td>{{ $surat->ocr->alamat ?? '-' }}</td>
                                 <td>{{ $surat->jenis_surat }}</td>
                                 <td>{{ \Carbon\Carbon::parse($surat->tanggal_pengajuan)->translatedFormat('d F Y') }}</td>
                                 <td>
                                     @php
                                         $badgeClass = match($surat->status) {
                                             'menunggu' => 'status-pending',
-                                            'diproses' => 'status-pending',
-                                            'selesai' => 'status-completed',
-                                            default => 'status-pending',
+                                            'diproses' => 'status-process',
+                                            'selesai'  => 'status-completed',
+                                            default    => 'status-pending',
+                                        };
+                                        $badgeLabel = match($surat->status) {
+                                            'menunggu' => 'Menunggu',
+                                            'diproses' => 'Diproses',
+                                            'selesai'  => 'Selesai',
+                                            default    => ucfirst($surat->status),
                                         };
                                     @endphp
-                                    <span class="status-badge {{ $badgeClass }}">{{ ucfirst($surat->status) }}</span>
+                                    <span class="status-badge {{ $badgeClass }}">{{ $badgeLabel }}</span>
                                 </td>
                                 <td>
                                     <div class="action-buttons">
-                                        <a href="{{ route('petugas.pengajuan.detail', $surat->id) }}" class="btn-action btn-detail" title="Lihat Detail" style="display:inline-flex; align-items:center; justify-content:center; text-decoration:none;">
+                                        {{-- Lihat Detail --}}
+                                        <a href="{{ route('petugas.pengajuan.detail', $surat->id) }}"
+                                           class="btn-action btn-detail"
+                                           title="Lihat Detail"
+                                           style="display:inline-flex; align-items:center; justify-content:center; text-decoration:none;">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <button class="btn-action btn-edit" title="Edit">
-                                            <i class="fas fa-pencil"></i>
-                                        </button>
-                                        @if($surat->status === 'menunggu')
-                                        <form action="{{ route('petugas.pengajuan.proses', $surat->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" class="btn-action" style="background:#ffc107; color:#000;" title="Proses">
-                                                <i class="fas fa-spinner"></i> Proses
-                                            </button>
-                                        </form>
+
+                                        {{-- Generate Surat: muncul saat status menunggu atau diproses --}}
+                                        @if(in_array($surat->status, ['menunggu', 'diproses']))
+                                        <a href="{{ route('petugas.pengajuan.generate', $surat->id) }}"
+                                           class="btn-action"
+                                           title="Generate Surat"
+                                           style="background:linear-gradient(135deg,#1a472a,#2e7d52); color:#fff; display:inline-flex; align-items:center; gap:0.3rem; text-decoration:none; padding:0.45rem 0.85rem; border-radius:7px; font-weight:700; font-size:0.82rem;">
+                                            <i class="fas fa-file-medical"></i> Generate
+                                        </a>
+                                        @endif
+
+                                        {{-- Surat selesai --}}
+                                        @if($surat->status === 'selesai')
+                                        <span style="display:inline-flex; align-items:center; gap:0.3rem; padding:0.45rem 0.85rem; background:#d4edda; color:#155724; border-radius:7px; font-size:0.82rem; font-weight:700;">
+                                            <i class="fas fa-check-double"></i> Selesai
+                                        </span>
                                         @endif
                                     </div>
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="8" style="text-align: center;">Belum ada pengajuan.</td>
+                                <td colspan="7" style="text-align: center; padding:2rem; color:#aaa;">
+                                    <i class="fas fa-inbox" style="font-size:2rem; margin-bottom:0.5rem; display:block;"></i>
+                                    Belum ada pengajuan.
+                                </td>
                             </tr>
                             @endforelse
                         </tbody>
