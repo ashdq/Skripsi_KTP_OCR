@@ -667,7 +667,7 @@ Project ini dilisensikan di bawah **MIT License**.
 - [Nama Dosen 2]
 
 **Penulis:**
-- Nama Anda
+- Fatriya Ibnu Ash shidiqqi
 
 ---
 
@@ -684,10 +684,8 @@ Project ini dilisensikan di bawah **MIT License**.
 
 ## 📞 Support & Documentation
 
-- 📖 **Full Documentation:** [Link Dokumentasi](https://docs.example.com)
-- 🐛 **Report Issues:** [GitHub Issues](https://github.com/yourusername/sia_kelurahan/issues)
-- 💬 **Diskusi:** [GitHub Discussions](https://github.com/yourusername/sia_kelurahan/discussions)
-- 📧 **Email:** [your.email@example.com]
+- 📖 **Full Documentation:** [Link Dokumentasi](https://drive.google.com/drive/folders/1gWLtN0KPP1ZjmFbCjUX4zYLIYUcLLq6P?usp=drive_link)
+- 📧 **Email:** [diqqifatriya@gmail.com]
 
 ---
 
