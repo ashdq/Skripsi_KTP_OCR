@@ -55,7 +55,7 @@ Route::middleware('auth')->group(function () {
         ->name('warga.dokumen.download');
 
     Route::get('/petugas/home', function () {
-        $surats = \App\Models\Surat::with('ocr')->latest()->take(5)->get();
+        $surats = \App\Models\Surat::with('ocr')->where('status', '!=', 'selesai')->latest()->take(5)->get();
         $totalBulanIni = \App\Models\Surat::whereMonth('tanggal_pengajuan', now()->month)
                                           ->whereYear('tanggal_pengajuan', now()->year)
                                           ->count();
@@ -146,12 +146,16 @@ Route::middleware('auth')->group(function () {
             // Ambil data signature dari request
             $signatureData = request('signature_data'); // base64 PNG
             $lokasi        = request('lokasi', 'Talun');
+            $nama_petugas  = request('nama_petugas', $surat->petugas->nama ?? 'Nama Kepala Lurah');
+            $nip_petugas   = request('nip_petugas', '-');
 
             // Generate PDF dari template
             $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('surat.template', [
                 'surat'         => $surat,
                 'signature_data'=> $signatureData,
                 'lokasi_ttd'    => $lokasi,
+                'nama_petugas'  => $nama_petugas,
+                'nip_petugas'   => $nip_petugas,
             ])->setPaper('a4', 'portrait');
 
             $fileName = 'surat_' . $surat->id . '_' . time() . '.pdf';

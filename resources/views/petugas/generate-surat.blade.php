@@ -521,17 +521,8 @@
                     <button id="btn-aktifkan-edit" class="btn-toolbar btn-edit-mode" onclick="toggleEditMode()">
                         <i class="fas fa-pen"></i> Aktifkan Edit
                     </button>
-                    <button class="btn-toolbar btn-copy" onclick="salinSemua()">
-                        <i class="fas fa-copy"></i> Salin Semua
-                    </button>
                 </div>
                 <div class="toolbar-right" style="display:flex; gap:0.6rem;">
-                    <button id="btn-mode-label" class="btn-toolbar btn-mode-view">
-                        <i class="fas fa-eye"></i> Mode: Lihat
-                    </button>
-                    <button class="btn-toolbar btn-pdf-download" onclick="window.print()">
-                        <i class="fas fa-file-pdf"></i> Cetak PDF
-                    </button>
                     <button class="btn-toolbar btn-finalize" onclick="showFinalizeModal()" style="background:linear-gradient(135deg,#1a472a,#2e7d52);">
                         <i class="fas fa-arrow-right"></i> Lanjut Tanda Tangan
                     </button>
@@ -662,7 +653,6 @@
             editModeActive = !editModeActive;
             const page = document.getElementById('document-page');
             const btn = document.getElementById('btn-aktifkan-edit');
-            const modeLabel = document.getElementById('btn-mode-label');
             const petunjuk = document.getElementById('petunjuk-bar');
 
             if (editModeActive) {
@@ -673,8 +663,6 @@
                 });
                 btn.innerHTML = '<i class="fas fa-times"></i> Nonaktifkan Edit';
                 btn.style.background = '#e74c3c';
-                modeLabel.innerHTML = '<i class="fas fa-pen"></i> Mode: Edit';
-                modeLabel.style.background = '#f5a623';
                 petunjuk.style.background = '#1a472a';
             } else {
                 page.classList.remove('edit-mode');
@@ -683,28 +671,11 @@
                 });
                 btn.innerHTML = '<i class="fas fa-pen"></i> Aktifkan Edit';
                 btn.style.background = '#f5a623';
-                modeLabel.innerHTML = '<i class="fas fa-eye"></i> Mode: Lihat';
-                modeLabel.style.background = '#6c757d';
                 petunjuk.style.background = '#4a4a4a';
             }
         }
 
-        function salinSemua() {
-            const page = document.getElementById('document-page');
-            const text = page.innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('Teks surat berhasil disalin!', 'success');
-            }).catch(() => {
-                // Fallback
-                const textarea = document.createElement('textarea');
-                textarea.value = text;
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textarea);
-                showToast('Teks surat berhasil disalin!', 'success');
-            });
-        }
+        // Fungsi salinSemua dihapus karena tombolnya dihilangkan
 
         function showFinalizeModal() {
             document.getElementById('finalize-overlay').classList.add('show');

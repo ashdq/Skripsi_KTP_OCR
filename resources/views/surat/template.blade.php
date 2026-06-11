@@ -238,8 +238,8 @@
                     <img src="{{ $signature_data }}" style="max-height:80px; max-width:180px;" alt="Tanda Tangan">
                 @endif
             </div>
-            <div class="ttd-nama">{{ $surat->petugas->nama ?? 'Nama Kepala Lurah' }}</div>
-            <div class="ttd-nip">NIP. -</div>
+            <div class="ttd-nama">{{ $nama_petugas ?? ($surat->petugas->nama ?? 'Nama Kepala Lurah') }}</div>
+            <div class="ttd-nip">NIP. {{ str_replace('NIP. ', '', $nip_petugas ?? '-') }}</div>
         </div>
     </div>
 

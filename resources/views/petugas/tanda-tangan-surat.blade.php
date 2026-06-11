@@ -472,8 +472,8 @@
                                 <div style="height:65px; display:flex; align-items:center; justify-content:flex-end;">
                                     <em style="font-size:0.78rem; color:#bbb;">[Tanda tangan akan ditambahkan]</em>
                                 </div>
-                                <div style="font-weight:900; text-decoration:underline;">{{ $surat->petugas->nama ?? 'Nama Kepala Lurah' }}</div>
-                                <div style="font-size:0.85rem; margin-top:2px;">NIP. -</div>
+                                <div style="font-weight:900; text-decoration:underline;" id="preview-nama-petugas">{{ $surat->petugas->nama ?? 'Nama Kepala Lurah' }}</div>
+                                <div style="font-size:0.85rem; margin-top:2px;" id="preview-nip-petugas">NIP. -</div>
                             </div>
 
                             {{-- QR placeholder --}}
@@ -522,6 +522,16 @@
                     <form action="{{ route('petugas.pengajuan.tandatangan', $surat->id) }}" method="POST" id="ttd-form">
                         @csrf
                         <input type="hidden" name="signature_data" id="signature-data-input">
+
+                        <div class="form-row" style="margin-bottom: 1rem;">
+                            <label for="nama_petugas">Nama Petugas Penandatangan</label>
+                            <input type="text" id="nama_petugas" name="nama_petugas" value="{{ $surat->petugas->nama ?? 'Petugas Contoh' }}" placeholder="Contoh: Budi Santoso, S.Sos">
+                        </div>
+
+                        <div class="form-row" style="margin-bottom: 1.5rem;">
+                            <label for="nip_petugas">NIP Petugas</label>
+                            <input type="text" id="nip_petugas" name="nip_petugas" value="-" placeholder="Masukkan NIP jika ada">
+                        </div>
 
 
                         <div class="ttd-submit-bar">
@@ -642,6 +652,28 @@
             }
             document.getElementById('signature-data-input').value = canvas.toDataURL('image/png');
             return true;
+        }
+
+        // Live preview update
+        const inputNama = document.getElementById('nama_petugas');
+        const inputNip = document.getElementById('nip_petugas');
+        const previewNama = document.getElementById('preview-nama-petugas');
+        const previewNip = document.getElementById('preview-nip-petugas');
+
+        if(inputNama && previewNama) {
+            inputNama.addEventListener('input', function() {
+                previewNama.innerText = this.value || 'Nama Kepala Lurah';
+            });
+            // trigger on load
+            previewNama.innerText = inputNama.value || 'Nama Kepala Lurah';
+        }
+
+        if(inputNip && previewNip) {
+            inputNip.addEventListener('input', function() {
+                previewNip.innerText = 'NIP. ' + (this.value || '-');
+            });
+            // trigger on load
+            previewNip.innerText = 'NIP. ' + (inputNip.value || '-');
         }
     </script>
 </body>
