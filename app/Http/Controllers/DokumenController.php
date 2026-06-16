@@ -76,8 +76,8 @@ class DokumenController extends Controller
     {
         $validated = $request->validate([
             'jenis_surat' => ['required', 'string'],
-            'ktp' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:4096'],
-            'kk' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:4096'],
+            'ktp' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:8192'],
+            'kk' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:8192'],
         ]);
 
         /** @var User $user */
