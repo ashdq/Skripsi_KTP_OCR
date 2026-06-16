@@ -363,6 +363,12 @@
         });
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Jika user tidak memiliki dokumen tersimpan (misal: akun baru), reset state step 2
+            if (!hasExistingKtp && !hasExistingKk) {
+                sessionStorage.removeItem('pengurusan_step');
+                sessionStorage.removeItem('identitas_state');
+            }
+
             if (sessionStorage.getItem('pengurusan_step') === 'identitas') {
                 uploadStep.classList.add('hidden');
                 identitasSection.classList.remove('hidden');
@@ -756,6 +762,8 @@
                     })
                     .then((data) => {
                         alert(data.message || 'Pengajuan surat berhasil dikirim.');
+                        sessionStorage.removeItem('pengurusan_step');
+                        sessionStorage.removeItem('identitas_state');
                         if (data.redirect_url) {
                             window.location.href = data.redirect_url;
                         }

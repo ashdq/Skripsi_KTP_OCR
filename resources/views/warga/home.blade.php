@@ -41,8 +41,8 @@
                             <i class="fas fa-download"></i>
                         </div>
                         <div class="stat-info">
-                            <p class="stat-label">Surat Terakhir Unduh</p>
-                            <p class="stat-count">1</p>
+                            <p class="stat-label">Surat Selesai / Siap Unduh</p>
+                            <p class="stat-count">{{ $totalUnduh }}</p>
                         </div>
                     </div>
 

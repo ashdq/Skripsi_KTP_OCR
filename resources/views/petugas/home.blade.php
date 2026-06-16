@@ -143,27 +143,24 @@
                 <div class="chart-summary">
                     <div class="summary-item">
                         <span class="summary-label">Total Penduduk</span>
-                        <span class="summary-value">2,547</span>
+                        <span class="summary-value">{{ $demografi['totalPenduduk'] }}</span>
                     </div>
                     <div class="summary-item">
                         <span class="summary-label">Rata-rata Usia</span>
-                        <span class="summary-value">34.5 Tahun</span>
+                        <span class="summary-value">{{ $demografi['rataRataUsia'] }} Tahun</span>
                     </div>
                     <div class="summary-item">
                         <span class="summary-label">Usia Termuda</span>
-                        <span class="summary-value">2 Tahun</span>
+                        <span class="summary-value">{{ $demografi['usiaTermuda'] }} Tahun</span>
                     </div>
                     <div class="summary-item">
                         <span class="summary-label">Usia Tertua</span>
-                        <span class="summary-value">87 Tahun</span>
+                        <span class="summary-value">{{ $demografi['usiaTertua'] }} Tahun</span>
                     </div>
                 </div>
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn-export" id="btn-export-data">
-                    <i class="fas fa-download"></i> Export Data
-                </button>
                 <button type="button" class="btn-close" id="btn-close-modal-footer">
                     Tutup
                 </button>
@@ -180,7 +177,6 @@
             const modalOverlay = document.getElementById('modal-overlay');
             const chartTabs = document.querySelectorAll('.chart-tab');
             const chartWrappers = document.querySelectorAll('.chart-wrapper');
-            const btnExportData = document.getElementById('btn-export-data');
 
             if (!modalDemografi || !btnAnalisisDemografi || !btnCloseModal || !btnCloseModalFooter || !modalOverlay) {
                 return;
@@ -225,7 +221,7 @@
                         labels: ['0-5 Tahun', '6-12 Tahun', '13-18 Tahun', '19-35 Tahun', '36-50 Tahun', '51-65 Tahun', '> 65 Tahun'],
                         datasets: [{
                             label: 'Jumlah Penduduk',
-                            data: [145, 287, 312, 638, 452, 256, 112],
+                            data: @json($demografi['usiaData']),
                             backgroundColor: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE'],
                             borderColor: '#fff',
                             borderWidth: 2
@@ -262,7 +258,7 @@
                         labels: ['Laki-Laki', 'Perempuan'],
                         datasets: [{
                             label: 'Jumlah Penduduk',
-                            data: [1247, 1300],
+                            data: @json($demografi['genderData']),
                             backgroundColor: ['#4f46e5', '#ec4899'],
                             borderRadius: 8,
                             borderSkipped: false,
@@ -287,7 +283,6 @@
                         scales: {
                             x: {
                                 beginAtZero: true,
-                                max: 1500,
                                 ticks: { color: '#6b7280' },
                                 grid: { color: 'rgba(0, 0, 0, 0.05)' }
                             },
@@ -307,7 +302,7 @@
                         labels: ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Budha', 'Kong Hu Cu'],
                         datasets: [{
                             label: 'Jumlah Penduduk',
-                            data: [1456, 542, 287, 156, 98, 8],
+                            data: @json($demografi['agamaData']),
                             backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'],
                             borderRadius: 8,
                             borderSkipped: false
@@ -374,12 +369,6 @@
                     }
                 });
             });
-
-            if (btnExportData) {
-                btnExportData.addEventListener('click', function() {
-                    alert('📊 Fitur export data akan segera tersedia!');
-                });
-            }
         });
     </script>
 </body>

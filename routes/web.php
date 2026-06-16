@@ -24,7 +24,13 @@ Route::middleware('auth')->group(function () {
         $warga = $user->warga;
         $surats = $warga ? \App\Models\Surat::where('warga_id', $warga->id)->orderBy('tanggal_pengajuan', 'desc')->get() : collect();
         $latestSurat = $surats->first();
-        return view('warga.home', compact('surats', 'latestSurat'));
+        $totalUnduh = $warga
+            ? \App\Models\Surat::where('warga_id', $warga->id)
+                ->where('status', 'selesai')
+                ->whereNotNull('file_surat')
+                ->count()
+            : 0;
+        return view('warga.home', compact('surats', 'latestSurat', 'totalUnduh'));
     })->name('warga.home');
 
     Route::get('/warga/unduh', function () {
@@ -61,7 +67,76 @@ Route::middleware('auth')->group(function () {
                                           ->count();
         $menungguTtd = \App\Models\Surat::where('status', 'menunggu')->count();
         
-        return view('petugas.home', compact('surats', 'totalBulanIni', 'menungguTtd'));
+        // --- Demografi Analisis ---
+        // Get unique OCR data based on NIK
+        $penduduk = \App\Models\Ocr::select('tanggal_lahir', 'jenis_kelamin', 'agama')
+            ->whereIn('id', function ($query) {
+                $query->selectRaw('MAX(id)')->from('ocrs')->groupBy('nik');
+            })->get();
+
+        $totalPenduduk = $penduduk->count();
+
+        $usiaData = [
+            '0-5' => 0, '6-12' => 0, '13-18' => 0, '19-35' => 0, '36-50' => 0, '51-65' => 0, '>65' => 0
+        ];
+        $totalUsia = 0;
+        $usiaTermuda = null;
+        $usiaTertua = null;
+        $countUsiaValid = 0;
+
+        foreach ($penduduk as $p) {
+            if ($p->tanggal_lahir) {
+                try {
+                    $tanggalLahir = \Carbon\Carbon::parse($p->tanggal_lahir);
+                    $umur = $tanggalLahir->age;
+                    $totalUsia += $umur;
+                    $countUsiaValid++;
+
+                    if ($usiaTermuda === null || $umur < $usiaTermuda) $usiaTermuda = $umur;
+                    if ($usiaTertua === null || $umur > $usiaTertua) $usiaTertua = $umur;
+
+                    if ($umur <= 5) $usiaData['0-5']++;
+                    elseif ($umur <= 12) $usiaData['6-12']++;
+                    elseif ($umur <= 18) $usiaData['13-18']++;
+                    elseif ($umur <= 35) $usiaData['19-35']++;
+                    elseif ($umur <= 50) $usiaData['36-50']++;
+                    elseif ($umur <= 65) $usiaData['51-65']++;
+                    else $usiaData['>65']++;
+                } catch (\Exception $e) {
+                    continue;
+                }
+            }
+        }
+        
+        $rataRataUsia = $countUsiaValid > 0 ? round($totalUsia / $countUsiaValid, 1) : 0;
+        $usiaTermuda = $usiaTermuda ?? 0;
+        $usiaTertua = $usiaTertua ?? 0;
+
+        $genderData = [
+            'Laki-Laki' => $penduduk->filter(function($item) { return strtolower(trim((string)$item->jenis_kelamin)) == 'laki-laki'; })->count(),
+            'Perempuan' => $penduduk->filter(function($item) { return strtolower(trim((string)$item->jenis_kelamin)) == 'perempuan'; })->count(),
+        ];
+
+        $agamaData = [
+            'Islam' => $penduduk->filter(function($item) { return strtolower(trim((string)$item->agama)) == 'islam'; })->count(),
+            'Kristen' => $penduduk->filter(function($item) { return strtolower(trim((string)$item->agama)) == 'kristen'; })->count(),
+            'Katolik' => $penduduk->filter(function($item) { return strtolower(trim((string)$item->agama)) == 'katolik'; })->count(),
+            'Hindu' => $penduduk->filter(function($item) { return strtolower(trim((string)$item->agama)) == 'hindu'; })->count(),
+            'Budha' => $penduduk->filter(function($item) { $val = strtolower(trim((string)$item->agama)); return $val == 'budha' || $val == 'buddha'; })->count(),
+            'Kong Hu Cu' => $penduduk->filter(function($item) { $val = strtolower(trim((string)$item->agama)); return $val == 'konghucu' || $val == 'kong hu cu'; })->count(),
+        ];
+
+        $demografi = [
+            'totalPenduduk' => number_format($totalPenduduk, 0, ',', '.'),
+            'usiaData' => array_values($usiaData),
+            'rataRataUsia' => $rataRataUsia,
+            'usiaTermuda' => $usiaTermuda,
+            'usiaTertua' => $usiaTertua,
+            'genderData' => [$genderData['Laki-Laki'], $genderData['Perempuan']],
+            'agamaData' => array_values($agamaData),
+        ];
+        
+        return view('petugas.home', compact('surats', 'totalBulanIni', 'menungguTtd', 'demografi'));
     })->name('petugas.home');
 
     Route::get('/petugas/daftar', function () {
