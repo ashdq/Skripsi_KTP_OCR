@@ -79,6 +79,7 @@
                                                 'menunggu' => 'status-pending',
                                                 'diproses' => 'status-pending',
                                                 'selesai'  => 'status-approved',
+                                                'ditolak'  => 'status-rejected',
                                                 default    => 'status-pending',
                                             };
                                         @endphp
@@ -86,10 +87,11 @@
                                     </td>
                                     <td>
                                         @if($surat->status === 'selesai' && $surat->file_surat)
-                                            <a href="{{ route('warga.surat.unduh', $surat->id) }}"
-                                               style="display:inline-flex; align-items:center; gap:0.4rem; padding:0.45rem 1rem; background:#1a472a; color:#fff; border-radius:7px; text-decoration:none; font-size:0.82rem; font-weight:700; transition:all 0.2s;"
-                                               title="Unduh Surat">
-                                                <i class="fas fa-download"></i> Unduh Surat
+                                            <a href="{{ route('warga.surat.lihat', $surat->id) }}"
+                                               target="_blank"
+                                               style="display:inline-flex; align-items:center; gap:0.4rem; padding:0.45rem 1rem; background:#f0f2f5; color:#4b5563; border: 1px solid #d1d5db; border-radius:7px; text-decoration:none; font-size:0.82rem; font-weight:700; transition:all 0.2s;"
+                                               title="Lihat Surat">
+                                                <i class="fas fa-file-pdf"></i> Lihat PDF
                                             </a>
                                         @else
                                             <span style="color:#bbb; font-size:0.82rem;">-</span>

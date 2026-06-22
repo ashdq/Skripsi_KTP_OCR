@@ -81,14 +81,14 @@
             flex-shrink: 0;
         }
 
-        .btn-unduh {
+        .btn-lihat-pdf {
             display: inline-flex;
             align-items: center;
             gap: 0.45rem;
             padding: 0.6rem 1.1rem;
-            background: linear-gradient(135deg, #1a472a, #2e7d52);
-            color: white;
-            border: none;
+            background: #f0f2f5;
+            color: #4b5563;
+            border: 1px solid #d1d5db;
             border-radius: 8px;
             font-size: 0.875rem;
             font-weight: 700;
@@ -99,11 +99,11 @@
             white-space: nowrap;
         }
 
-        .btn-unduh:hover {
-            background: linear-gradient(135deg, #133620, #245e3e);
-            color: white;
+        .btn-lihat-pdf:hover {
+            background: #e5e7eb;
+            color: #1f2937;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(26,71,42,0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         /* Empty State */
@@ -235,10 +235,11 @@
                                     </span>
                                 </div>
                                 <div class="letter-action">
-                                    <a href="{{ route('warga.surat.unduh', $surat->id) }}"
-                                       class="btn-unduh"
-                                       title="Unduh {{ $surat->jenis_surat }}">
-                                        <i class="fas fa-download"></i> Unduh Surat
+                                    <a href="{{ route('warga.surat.lihat', $surat->id) }}"
+                                       target="_blank"
+                                       class="btn-lihat-pdf"
+                                       title="Lihat PDF {{ $surat->jenis_surat }}">
+                                        <i class="fas fa-file-pdf"></i> Lihat PDF
                                     </a>
                                 </div>
                             </div>

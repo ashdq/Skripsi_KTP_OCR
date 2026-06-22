@@ -160,6 +160,48 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="dokumen-section" style="margin-top: 2rem;">
+                        <div class="dokumen-header" style="margin-bottom: 1.5rem;">
+                            <h2 style="font-size: 1.25rem; font-weight: 600; color: #1a472a; margin-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;">Dokumen Pendukung</h2>
+                        </div>
+                        
+                        <div class="dokumen-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                            @php $dokumen = $surat->warga->dokumen->first(); @endphp
+                            
+                            <div class="dokumen-card" style="background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+                                <h3 style="font-size: 1rem; font-weight: 600; color: #4a5568; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-id-card"></i> Foto KTP
+                                </h3>
+                                <div class="image-container" style="display: flex; justify-content: center; align-items: center; min-height: 200px; background: #f8fafc; border-radius: 6px; overflow: hidden;">
+                                    @if($dokumen && $dokumen->file_path_ktp)
+                                        <img src="{{ asset('storage/' . $dokumen->file_path_ktp) }}" alt="Foto KTP" style="max-width: 100%; height: auto; object-fit: contain; cursor: pointer;" onclick="window.open(this.src, '_blank')">
+                                    @else
+                                        <div style="color: #64748b; text-align: center;">
+                                            <i class="fas fa-image fa-3x" style="margin-bottom: 0.5rem; opacity: 0.5;"></i>
+                                            <p>File KTP tidak tersedia</p>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="dokumen-card" style="background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0;">
+                                <h3 style="font-size: 1rem; font-weight: 600; color: #4a5568; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-users"></i> Foto Kartu Keluarga
+                                </h3>
+                                <div class="image-container" style="display: flex; justify-content: center; align-items: center; min-height: 200px; background: #f8fafc; border-radius: 6px; overflow: hidden;">
+                                    @if($dokumen && $dokumen->file_path_kk)
+                                        <img src="{{ asset('storage/' . $dokumen->file_path_kk) }}" alt="Foto KK" style="max-width: 100%; height: auto; object-fit: contain; cursor: pointer;" onclick="window.open(this.src, '_blank')">
+                                    @else
+                                        <div style="color: #64748b; text-align: center;">
+                                            <i class="fas fa-image fa-3x" style="margin-bottom: 0.5rem; opacity: 0.5;"></i>
+                                            <p>File KK tidak tersedia</p>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>

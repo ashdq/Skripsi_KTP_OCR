@@ -14,6 +14,8 @@ class Dokumen extends Model
 
     protected $fillable = [
         'warga_id',
+        'file_path_ktp',
+        'file_path_kk',
     ];
 
     public function warga(): BelongsTo

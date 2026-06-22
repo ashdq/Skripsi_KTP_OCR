@@ -405,84 +405,97 @@
                 </div>
                 <div style="background:#d0d5dc; padding:1.5rem; border-radius:0 0 12px 12px;">
                     <div class="letter-preview-scroll">
-                        <div class="letter-page">
+                        <div class="letter-page" id="document-page">
+                            @if($surat->html_content)
+                                {!! $surat->html_content !!}
+                            @else
+                                {{-- KOP SURAT --}}
+                                <table class="kop-table" style="width: 100%; border-bottom: 3px solid #000; padding-bottom: 8px; margin-bottom: 15px; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="width: 100px; text-align: left; vertical-align: middle;">
+                                            <img src="{{ asset('img/logo-kab.png') }}" alt="Logo Kabupaten Blitar" style="width: 85px; height: 85px;">
+                                        </td>
+                                        <td style="text-align: center; vertical-align: middle;">
+                                            <div class="kop-line-1" style="font-size: 12pt; font-weight: normal;">PEMERINTAH KABUPATEN BLITAR</div>
+                                            <div class="kop-line-2" style="font-size: 12pt; font-weight: normal;">KECAMATAN TALUN</div>
+                                            <div class="kop-line-3" style="font-size: 18pt; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin: 2px 0;">KELURAHAN TALUN</div>
+                                            <div class="kop-line-4" style="font-size: 9pt;">Jalan Raya Talun Nomor 57 Kecamatan Talun Kode Pos 66183</div>
+                                            <div class="kop-line-5" style="font-size: 9pt;">Telp: (0342) 692 809 Email: kelurahantalun@example.com</div>
+                                        </td>
+                                    </tr>
+                                </table>
 
-                            {{-- KOP SURAT --}}
-                            <div style="display:flex; align-items:center; gap:1.2rem; padding-bottom:0.6rem; border-bottom:3px solid #000; margin-bottom:0.8rem;">
-                                <img src="{{ asset('img/logo-kab.png') }}" alt="Logo Kabupaten" style="width:80px; height:80px; object-fit:contain; flex-shrink:0;">
-                                <div style="flex:1; text-align:center;">
-                                    <div style="font-size:0.9rem;">PEMERINTAH KABUPATEN BLITAR</div>
-                                    <div style="font-size:1rem;">KECAMATAN TALUN</div>
-                                    <div style="font-size:1.5rem; font-weight:900; letter-spacing:1px; text-transform:uppercase;">KELURAHAN TALUN</div>
-                                    <div style="font-size:0.75rem; color:#333; margin-top:3px;">Jalan Raya Talun Nomor 57 Kecamatan Talun Kode Pos 66183</div>
-                                    <div style="font-size:0.75rem; color:#333;">Telp: (0342) 692 809 Email: kelurahantalun@example.com</div>
+                                {{-- JUDUL SURAT --}}
+                                <div style="text-align:center; margin:15px 0;">
+                                    <div style="font-size: 14pt; font-weight: bold; text-decoration: underline; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px;">{{ strtoupper($surat->jenis_surat) }}</div>
+                                    <div style="font-size: 11pt;">Nomor: {{ strtoupper(substr(str_replace(' ','',$surat->jenis_surat),0,3)) }}/{{ $surat->id }}/KEL-TLN/{{ date('Y') }}</div>
                                 </div>
-                            </div>
 
-                            {{-- JUDUL SURAT --}}
-                            <div style="text-align:center; margin:1rem 0 0.5rem 0;">
-                                <div style="font-size:1.1rem; font-weight:900; text-decoration:underline; text-transform:uppercase; letter-spacing:1px;">{{ strtoupper($surat->jenis_surat) }}</div>
-                                <div style="font-size:0.85rem; margin-top:4px;">Nomor: {{ strtoupper(substr(str_replace(' ','',$surat->jenis_surat),0,3)) }}/{{ $surat->id }}/KEL-TLN/{{ date('Y') }}</div>
-                            </div>
+                                {{-- PEMBUKA --}}
+                                <p style="margin:15px 0 10px 0; text-align:justify;">Yang bertanda tangan di bawah ini, Lurah Talun, Kecamatan Talun, Kabupaten Blitar, menerangkan bahwa:</p>
 
-                            {{-- PEMBUKA --}}
-                            <p style="margin:1rem 0 0.5rem 0; text-align:justify;">Yang bertanda tangan di bawah ini, Lurah Talun, Kecamatan Talun, Kabupaten Blitar, menerangkan bahwa:</p>
+                                {{-- DATA IDENTITAS --}}
+                                <table style="margin: 5px 0 15px 25px; font-size: 12pt; width: calc(100% - 25px); border-collapse: collapse;">
+                                    <tr>
+                                        <td style="width: 160px; padding: 3px 0; vertical-align: top;">Nama</td>
+                                        <td style="width: 20px; padding: 3px 0; vertical-align: top;">:</td>
+                                        <td style="padding: 3px 0; vertical-align: top;"><strong>{{ strtoupper($surat->ocr->nama ?? '-') }}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 3px 0; vertical-align: top;">NIK</td><td style="padding: 3px 0; vertical-align: top;">:</td>
+                                        <td style="padding: 3px 0; vertical-align: top;">{{ $surat->ocr->nik ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 3px 0; vertical-align: top;">Tempat, Tgl Lahir</td><td style="padding: 3px 0; vertical-align: top;">:</td>
+                                        <td style="padding: 3px 0; vertical-align: top;">{{ $surat->ocr->tempat_lahir ?? '-' }}, {{ $surat->ocr->tanggal_lahir ? \Carbon\Carbon::parse($surat->ocr->tanggal_lahir)->translatedFormat('d F Y') : '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 3px 0; vertical-align: top;">Jenis Kelamin</td><td style="padding: 3px 0; vertical-align: top;">:</td>
+                                        <td style="padding: 3px 0; vertical-align: top;">{{ ucfirst($surat->ocr->jenis_kelamin ?? '-') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 3px 0; vertical-align: top;">Agama</td><td style="padding: 3px 0; vertical-align: top;">:</td>
+                                        <td style="padding: 3px 0; vertical-align: top;">{{ ucfirst($surat->ocr->agama ?? '-') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 3px 0; vertical-align: top;">Pekerjaan</td><td style="padding: 3px 0; vertical-align: top;">:</td>
+                                        <td style="padding: 3px 0; vertical-align: top;">{{ $surat->ocr->pekerjaan ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 3px 0; vertical-align: top;">Alamat</td><td style="padding: 3px 0; vertical-align: top;">:</td>
+                                        <td style="padding: 3px 0; vertical-align: top;">{{ ($surat->ocr->alamat ?? '-') . ($surat->ocr->rt_rw ? ' RT '.$surat->ocr->rt_rw : '') . ($surat->ocr->kelurahan ? ' Desa '.$surat->ocr->kelurahan : '') }}</td>
+                                    </tr>
+                                </table>
 
-                            {{-- DATA IDENTITAS --}}
-                            <table style="margin:0.5rem 0 0.5rem 1rem; line-height:1.9;">
-                                <tr>
-                                    <td style="width:145px; vertical-align:top;">Nama</td>
-                                    <td style="width:15px; vertical-align:top;">:</td>
-                                    <td><strong>{{ strtoupper($surat->ocr->nama ?? '-') }}</strong></td>
-                                </tr>
-                                <tr>
-                                    <td>NIK</td><td>:</td>
-                                    <td>{{ $surat->ocr->nik ?? '-' }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Tempat, Tgl Lahir</td><td>:</td>
-                                    <td>{{ $surat->ocr->tempat_lahir ?? '-' }}, {{ $surat->ocr->tanggal_lahir ? \Carbon\Carbon::parse($surat->ocr->tanggal_lahir)->translatedFormat('d F Y') : '-' }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Jenis Kelamin</td><td>:</td>
-                                    <td>{{ ucfirst($surat->ocr->jenis_kelamin ?? '-') }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Agama</td><td>:</td>
-                                    <td>{{ ucfirst($surat->ocr->agama ?? '-') }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Pekerjaan</td><td>:</td>
-                                    <td>{{ $surat->ocr->pekerjaan ?? '-' }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Alamat</td><td>:</td>
-                                    <td>{{ ($surat->ocr->alamat ?? '-') . ($surat->ocr->rt_rw ? ' RT '.$surat->ocr->rt_rw : '') . ($surat->ocr->kelurahan ? ' Desa '.$surat->ocr->kelurahan : '') }}</td>
-                                </tr>
-                            </table>
+                                {{-- ISI --}}
+                                <p style="margin: 15px 0; text-align: justify;">Berdasarkan data dan pengamatan Pemerintah Kelurahan Talun, yang bersangkutan benar berdomisili dan bertempat tinggal di wilayah Kelurahan Talun sampai dengan surat ini dibuat.</p>
+                                <p style="margin: 15px 0 25px 0; text-align: justify;">Surat keterangan ini dibuat untuk keperluan administrasi dan keperluan lain yang sah sesuai dengan peraturan yang berlaku.</p>
 
-                            {{-- ISI --}}
-                            <p style="margin:1rem 0; text-align:justify;">Berdasarkan data dan pengamatan Pemerintah Kelurahan Talun, yang bersangkutan benar berdomisili dan bertempat tinggal di wilayah Kelurahan Talun sampai dengan surat ini dibuat.</p>
-                            <p style="margin:1rem 0; text-align:justify;">Surat keterangan ini dibuat untuk keperluan administrasi dan keperluan lain yang sah sesuai dengan peraturan yang berlaku.</p>
-
-                            {{-- TTD placeholder --}}
-                            <div style="margin-top:2rem; text-align:right; padding-right:1rem;">
-                                <div>Talun, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</div>
-                                <div style="margin-bottom:0.3rem;">Kepala Kelurahan Talun</div>
-                                <div style="height:65px; display:flex; align-items:center; justify-content:flex-end;">
-                                    <em style="font-size:0.78rem; color:#bbb;">[Tanda tangan akan ditambahkan]</em>
-                                </div>
-                                <div style="font-weight:900; text-decoration:underline;" id="preview-nama-petugas">{{ $surat->petugas->nama ?? 'Nama Kepala Lurah' }}</div>
-                                <div style="font-size:0.85rem; margin-top:2px;" id="preview-nip-petugas">NIP. -</div>
-                            </div>
-
-                            {{-- QR placeholder --}}
-                            <div style="position:absolute; bottom:1.5cm; left:2cm; text-align:center; font-size:0.7rem; color:#555;">
-                                <div style="width:60px; height:60px; background:#f0f0f0; border:1px solid #ccc; display:flex; align-items:center; justify-content:center; margin:0 auto 4px;">
-                                    <i class="fas fa-qrcode" style="font-size:1.8rem; color:#bbb;"></i>
-                                </div>
-                                <span>Scan untuk validasi</span>
-                            </div>
+                                {{-- TTD placeholder --}}
+                                <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="vertical-align: top; width: 50%; padding-top: 40px;">
+                                            <div style="text-align: center; font-size: 9pt; color: #555;">
+                                                <div style="width: 70px; height: 70px; border: 1px solid #ccc; margin: 0 auto 5px auto; line-height: 70px; text-align: center; color: #aaa; font-size: 8pt;">
+                                                    <i class="fas fa-qrcode" style="font-size:1.8rem; color:#bbb;"></i>
+                                                </div>
+                                                <span>Scan untuk validasi</span>
+                                            </div>
+                                        </td>
+                                        <td style="vertical-align: top; width: 50%;">
+                                            <div style="text-align: center;">
+                                                <p style="margin: 2px 0;" id="preview-lokasi-ttd">Talun, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
+                                                <p style="margin: 2px 0;">Kepala Kelurahan Talun</p>
+                                                <div id="preview-ttd-space" style="height: 80px; margin: 10px 0; display:flex; align-items:center; justify-content:center;">
+                                                    <em style="font-size:0.78rem; color:#bbb;">[Tanda tangan akan ditambahkan]</em>
+                                                </div>
+                                                <p style="margin: 2px 0; font-weight: bold; text-decoration: underline;" id="preview-nama-petugas">{{ $surat->petugas->nama ?? 'Nama Kepala Lurah' }}</p>
+                                                <p style="margin: 2px 0;" id="preview-nip-petugas">NIP. -</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            @endif
                         </div>
                     </div>
                 </div>

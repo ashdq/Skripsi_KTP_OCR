@@ -160,6 +160,18 @@ Route::middleware('auth')->group(function () {
         return back()->with('error', 'Akses ditolak.');
     })->name('petugas.pengajuan.proses');
 
+    Route::patch('/petugas/pengajuan/{surat}/tolak', function (\App\Models\Surat $surat) {
+        $user = Auth::user();
+        if ($user && $user->petugas) {
+            $surat->update([
+                'status' => 'ditolak',
+                'petugas_id' => $user->petugas->id
+            ]);
+            return back()->with('success', 'Pengajuan surat berhasil ditolak.');
+        }
+        return back()->with('error', 'Akses ditolak.');
+    })->name('petugas.pengajuan.tolak');
+
     Route::get('/petugas/pengajuan/{surat}/detail', function (\App\Models\Surat $surat) {
         $user = Auth::user();
         if ($user && $user->petugas) {
@@ -192,15 +204,33 @@ Route::middleware('auth')->group(function () {
     Route::get('/petugas/pengajuan/{surat}/generate', function (\App\Models\Surat $surat) {
         $user = Auth::user();
         if ($user && $user->petugas && in_array($surat->status, ['menunggu', 'diproses'])) {
-            // Ubah status ke diproses saat pertama dibuka generate
-            if ($surat->status === 'menunggu') {
-                $surat->update(['status' => 'diproses', 'petugas_id' => $user->petugas->id]);
-            }
             $surat->load('ocr');
             return view('petugas.generate-surat', compact('surat'));
         }
         return redirect()->route('petugas.daftar')->with('error', 'Surat tidak valid.');
     })->name('petugas.pengajuan.generate');
+
+    // Route untuk Simpan Surat (menyimpan HTML dan mengubah status ke diproses)
+    Route::post('/petugas/pengajuan/{surat}/simpan', function (\Illuminate\Http\Request $request, \App\Models\Surat $surat) {
+        $user = Auth::user();
+        if ($user && $user->petugas && in_array($surat->status, ['menunggu', 'diproses'])) {
+            $htmlContent = $request->input('html_content');
+            
+            $updateData = [
+                'html_content' => $htmlContent
+            ];
+
+            if ($surat->status === 'menunggu') {
+                $updateData['status'] = 'diproses';
+                $updateData['petugas_id'] = $user->petugas->id;
+            }
+
+            $surat->update($updateData);
+
+            return redirect()->route('petugas.pengajuan.ttd.page', $surat->id)->with('success', 'Surat berhasil disimpan dan siap ditandatangani.');
+        }
+        return back()->with('error', 'Akses ditolak.');
+    })->name('petugas.pengajuan.simpan');
 
     // Halaman tanda tangan detail per surat (dari halaman tanda-tangan)
     Route::get('/petugas/pengajuan/{surat}/tanda-tangan', function (\App\Models\Surat $surat) {
@@ -225,7 +255,9 @@ Route::middleware('auth')->group(function () {
             $nip_petugas   = request('nip_petugas', '-');
 
             // Generate PDF dari template
-            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('surat.template', [
+            $viewName = $surat->html_content ? 'surat.custom-template' : 'surat.template';
+            
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($viewName, [
                 'surat'         => $surat,
                 'signature_data'=> $signatureData,
                 'lokasi_ttd'    => $lokasi,
@@ -294,9 +326,8 @@ Route::middleware('auth')->group(function () {
             }
         }
 
-        $downloadName = 'Surat_' . str_replace(' ', '_', $surat->jenis_surat) . '.pdf';
-        return response()->download($fullPath, $downloadName, ['Content-Type' => 'application/pdf']);
-    })->name('warga.surat.unduh');
+        return response()->file($fullPath);
+    })->name('warga.surat.lihat');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

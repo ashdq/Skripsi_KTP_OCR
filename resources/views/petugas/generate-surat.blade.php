@@ -523,8 +523,8 @@
                     </button>
                 </div>
                 <div class="toolbar-right" style="display:flex; gap:0.6rem;">
-                    <button class="btn-toolbar btn-finalize" onclick="showFinalizeModal()" style="background:linear-gradient(135deg,#1a472a,#2e7d52);">
-                        <i class="fas fa-arrow-right"></i> Lanjut Tanda Tangan
+                    <button type="button" class="btn-toolbar btn-finalize" onclick="submitSimpan()" style="background:linear-gradient(135deg,#1a472a,#2e7d52);">
+                        <i class="fas fa-save"></i> Simpan Surat
                     </button>
                 </div>
             </div>
@@ -538,88 +538,102 @@
             {{-- Document Preview --}}
             <div class="document-preview-container" id="document-container">
                 <div class="document-page" id="document-page">
+                    @if($surat->html_content)
+                        {!! $surat->html_content !!}
+                    @else
 
                     {{-- KOP SURAT --}}
-                    <div class="surat-kop">
-                        <img src="{{ asset('img/logo-kab.png') }}" alt="Logo Kabupaten Blitar" class="surat-logo">
-                        <div class="surat-kop-text">
-                            <div class="kop-line-1" contenteditable="false">PEMERINTAH KABUPATEN BLITAR</div>
-                            <div class="kop-line-2" contenteditable="false">KECAMATAN TALUN</div>
-                            <div class="kop-line-3" contenteditable="false">KELURAHAN TALUN</div>
-                            <div class="kop-line-4" contenteditable="false">Jalan Raya Talun Nomor 57 Kecamatan Talun Kode Pos 66183</div>
-                            <div class="kop-line-5" contenteditable="false">Telp: (0342) 692 809 Email: kelurahantalun@example.com</div>
-                        </div>
-                    </div>
+                    <table class="kop-table" style="width: 100%; border-bottom: 3px solid #000; padding-bottom: 8px; margin-bottom: 15px; border-collapse: collapse;">
+                        <tr>
+                            <td style="width: 100px; text-align: left; vertical-align: middle;">
+                                <img src="{{ asset('img/logo-kab.png') }}" alt="Logo Kabupaten Blitar" style="width: 85px; height: 85px;">
+                            </td>
+                            <td style="text-align: center; vertical-align: middle;">
+                                <div class="kop-line-1" contenteditable="false" style="font-size: 12pt; font-weight: normal;">PEMERINTAH KABUPATEN BLITAR</div>
+                                <div class="kop-line-2" contenteditable="false" style="font-size: 12pt; font-weight: normal;">KECAMATAN TALUN</div>
+                                <div class="kop-line-3" contenteditable="false" style="font-size: 18pt; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin: 2px 0;">KELURAHAN TALUN</div>
+                                <div class="kop-line-4" contenteditable="false" style="font-size: 9pt;">Jalan Raya Talun Nomor 57 Kecamatan Talun Kode Pos 66183</div>
+                                <div class="kop-line-5" contenteditable="false" style="font-size: 9pt;">Telp: (0342) 692 809 Email: kelurahantalun@example.com</div>
+                            </td>
+                        </tr>
+                    </table>
 
                     {{-- JUDUL SURAT --}}
-                    <div class="surat-title-section">
-                        <div class="surat-title" contenteditable="false">{{ strtoupper($surat->jenis_surat) }}</div>
-                        <div class="surat-nomor" contenteditable="false">Nomor: <span id="nomor-surat">{{ strtoupper(substr(str_replace(' ', '', $surat->jenis_surat), 0, 3) . rand(100,999) . substr(str_replace([' ','Surat Keterangan '], ['','SK'], $surat->jenis_surat), 0, 1) . date('Y')) }}</span></div>
+                    <div class="surat-title-section" style="text-align: center; margin: 15px 0;">
+                        <div class="surat-title" contenteditable="false" style="font-size: 14pt; font-weight: bold; text-decoration: underline; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 3px;">{{ strtoupper($surat->jenis_surat) }}</div>
+                        <div class="surat-nomor" contenteditable="false" style="font-size: 11pt;">Nomor: <span id="nomor-surat">{{ strtoupper(substr(str_replace(' ', '', $surat->jenis_surat), 0, 3) . rand(100,999) . substr(str_replace([' ','Surat Keterangan '], ['','SK'], $surat->jenis_surat), 0, 1) . date('Y')) }}</span></div>
                     </div>
 
                     {{-- PEMBUKA --}}
-                    <p class="surat-pembuka" contenteditable="false">Yang bertanda tangan di bawah ini, Lurah Talun, Kecamatan Talun, Kabupaten Blitar, menerangkan bahwa:</p>
+                    <p class="surat-pembuka" contenteditable="false" style="margin: 15px 0 10px 0; text-align: justify;">Yang bertanda tangan di bawah ini, Lurah Talun, Kecamatan Talun, Kabupaten Blitar, menerangkan bahwa:</p>
 
                     {{-- DATA IDENTITAS --}}
-                    <table class="surat-data-table">
+                    <table class="surat-data-table" style="margin: 5px 0 15px 25px; font-size: 12pt; width: calc(100% - 25px); border-collapse: collapse;">
                         <tr>
-                            <td>Nama</td>
-                            <td>:</td>
-                            <td contenteditable="false"><strong>{{ strtoupper($surat->ocr->nama ?? '-') }}</strong></td>
+                            <td style="width: 160px; padding: 3px 0; vertical-align: top;">Nama</td>
+                            <td style="width: 20px; padding: 3px 0; vertical-align: top;">:</td>
+                            <td contenteditable="false" style="padding: 3px 0; vertical-align: top;"><strong>{{ strtoupper($surat->ocr->nama ?? '-') }}</strong></td>
                         </tr>
                         <tr>
-                            <td>NIK</td>
-                            <td>:</td>
-                            <td contenteditable="false">{{ $surat->ocr->nik ?? '-' }}</td>
+                            <td style="padding: 3px 0; vertical-align: top;">NIK</td>
+                            <td style="padding: 3px 0; vertical-align: top;">:</td>
+                            <td contenteditable="false" style="padding: 3px 0; vertical-align: top;">{{ $surat->ocr->nik ?? '-' }}</td>
                         </tr>
                         <tr>
-                            <td>Tempat, Tgl Lahir</td>
-                            <td>:</td>
-                            <td contenteditable="false">{{ $surat->ocr->tempat_lahir ?? '-' }}, {{ \Carbon\Carbon::parse($surat->ocr->tanggal_lahir)->translatedFormat('d F Y') ?? '-' }}</td>
+                            <td style="padding: 3px 0; vertical-align: top;">Tempat, Tgl Lahir</td>
+                            <td style="padding: 3px 0; vertical-align: top;">:</td>
+                            <td contenteditable="false" style="padding: 3px 0; vertical-align: top;">{{ $surat->ocr->tempat_lahir ?? '-' }}, {{ \Carbon\Carbon::parse($surat->ocr->tanggal_lahir)->translatedFormat('d F Y') ?? '-' }}</td>
                         </tr>
                         <tr>
-                            <td>Jenis Kelamin</td>
-                            <td>:</td>
-                            <td contenteditable="false">{{ $surat->ocr->jenis_kelamin ?? '-' }}</td>
+                            <td style="padding: 3px 0; vertical-align: top;">Jenis Kelamin</td>
+                            <td style="padding: 3px 0; vertical-align: top;">:</td>
+                            <td contenteditable="false" style="padding: 3px 0; vertical-align: top;">{{ $surat->ocr->jenis_kelamin ?? '-' }}</td>
                         </tr>
                         <tr>
-                            <td>Agama</td>
-                            <td>:</td>
-                            <td contenteditable="false">{{ $surat->ocr->agama ?? '-' }}</td>
+                            <td style="padding: 3px 0; vertical-align: top;">Agama</td>
+                            <td style="padding: 3px 0; vertical-align: top;">:</td>
+                            <td contenteditable="false" style="padding: 3px 0; vertical-align: top;">{{ $surat->ocr->agama ?? '-' }}</td>
                         </tr>
                         <tr>
-                            <td>Pekerjaan</td>
-                            <td>:</td>
-                            <td contenteditable="false">{{ $surat->ocr->pekerjaan ?? '-' }}</td>
+                            <td style="padding: 3px 0; vertical-align: top;">Pekerjaan</td>
+                            <td style="padding: 3px 0; vertical-align: top;">:</td>
+                            <td contenteditable="false" style="padding: 3px 0; vertical-align: top;">{{ $surat->ocr->pekerjaan ?? '-' }}</td>
                         </tr>
                         <tr>
-                            <td>Alamat</td>
-                            <td>:</td>
-                            <td contenteditable="false">{{ ($surat->ocr->alamat ?? '-') . ($surat->ocr->rt_rw ? ' RT ' . $surat->ocr->rt_rw : '') . ($surat->ocr->kelurahan ? ' Desa ' . $surat->ocr->kelurahan : '') }}</td>
+                            <td style="padding: 3px 0; vertical-align: top;">Alamat</td>
+                            <td style="padding: 3px 0; vertical-align: top;">:</td>
+                            <td contenteditable="false" style="padding: 3px 0; vertical-align: top;">{{ ($surat->ocr->alamat ?? '-') . ($surat->ocr->rt_rw ? ' RT ' . $surat->ocr->rt_rw : '') . ($surat->ocr->kelurahan ? ' Desa ' . $surat->ocr->kelurahan : '') }}</td>
                         </tr>
                     </table>
 
                     {{-- ISI SURAT --}}
-                    <p class="surat-isi" contenteditable="false">Berdasarkan data dan pengamatan Pemerintah Kelurahan Talun, yang bersangkutan benar berdomisili dan bertempat tinggal di wilayah Kelurahan Talun sampai dengan surat ini dibuat.</p>
+                    <p class="surat-isi" contenteditable="false" style="margin: 15px 0; text-align: justify;">Berdasarkan data dan pengamatan Pemerintah Kelurahan Talun, yang bersangkutan benar berdomisili dan bertempat tinggal di wilayah Kelurahan Talun sampai dengan surat ini dibuat.</p>
 
-                    <p class="surat-penutup" contenteditable="false">Surat keterangan ini dibuat untuk keperluan administrasi dan keperluan lain yang sah sesuai dengan peraturan yang berlaku.</p>
+                    <p class="surat-penutup" contenteditable="false" style="margin: 15px 0 25px 0; text-align: justify;">Surat keterangan ini dibuat untuk keperluan administrasi dan keperluan lain yang sah sesuai dengan peraturan yang berlaku.</p>
 
                     {{-- TANDA TANGAN --}}
-                    <div class="surat-ttd">
-                        <div class="surat-ttd-tempat" contenteditable="false">Talun, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</div>
-                        <div class="surat-ttd-jabatan" contenteditable="false">Kepala Kelurahan Talun</div>
-                        <div class="surat-ttd-space"></div>
-                        <div class="surat-ttd-nama" contenteditable="false">Nama Kepala Lurah</div>
-                        <div class="surat-ttd-nip" contenteditable="false">NIP. -</div>
-                    </div>
-
-                    {{-- QR AREA --}}
-                    <div class="surat-qr-area">
-                        <div class="qr-placeholder">
-                            <i class="fas fa-qrcode" style="font-size:2rem; color:#bbb;"></i>
-                        </div>
-                        <span>Scan untuk validasi</span>
-                    </div>
+                    <table class="ttd-table" style="width: 100%; margin-top: 20px; border-collapse: collapse;">
+                        <tr>
+                            <td style="vertical-align: top; width: 50%; padding-top: 40px;">
+                                <div class="ttd-qr" style="text-align: center; font-size: 9pt; color: #555;">
+                                    <div class="qr-box" style="width: 70px; height: 70px; border: 1px solid #ccc; margin: 0 auto 5px auto; line-height: 70px; text-align: center; color: #aaa; font-size: 8pt;">
+                                        [QR CODE]
+                                    </div>
+                                    <span contenteditable="false">Scan untuk validasi</span>
+                                </div>
+                            </td>
+                            <td style="vertical-align: top; width: 50%;">
+                                <div class="ttd-right" style="text-align: center;">
+                                    <p contenteditable="false" style="margin: 2px 0;" id="preview-lokasi-ttd">Talun, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}</p>
+                                    <p contenteditable="false" style="margin: 2px 0;">Kepala Kelurahan Talun</p>
+                                    <div class="ttd-space" id="preview-ttd-space" style="height: 80px; margin: 10px 0;"></div>
+                                    <p contenteditable="false" style="margin: 2px 0; font-weight: bold; text-decoration: underline;" id="preview-nama-petugas">Nama Kepala Lurah</p>
+                                    <p contenteditable="false" style="margin: 2px 0;" id="preview-nip-petugas">NIP. -</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    @endif
                 </div>
             </div>
         </main>
@@ -627,24 +641,12 @@
 
     @include('layout.footer')
 
-    {{-- Finalize Confirmation Modal --}}
-    <div class="finalize-overlay" id="finalize-overlay">
-        <div class="finalize-card">
-            <div class="finalize-icon">
-                <i class="fas fa-pen-nib" style="color:#1a472a;"></i>
-            </div>
-            <h3>Lanjut ke Tanda Tangan?</h3>
-            <p>Surat telah di-generate. Anda akan diarahkan ke halaman <strong>Tanda Tangan</strong> untuk menandatangani surat ini secara digital.</p>
-            <div class="finalize-actions">
-                <button class="btn-cancel-modal" onclick="closeFinalizeModal()">
-                    <i class="fas fa-times"></i> Batal
-                </button>
-                <a href="{{ route('petugas.tanda-tangan') }}" class="btn-confirm" style="text-decoration:none;">
-                    <i class="fas fa-arrow-right"></i> Ya, Lanjutkan
-                </a>
-            </div>
-        </div>
-    </div>
+
+
+    <form id="simpan-form" action="{{ route('petugas.pengajuan.simpan', $surat->id) }}" method="POST" style="display:none;">
+        @csrf
+        <input type="hidden" name="html_content" id="html-content-input">
+    </form>
 
     <script>
         let editModeActive = false;
@@ -677,17 +679,16 @@
 
         // Fungsi salinSemua dihapus karena tombolnya dihilangkan
 
-        function showFinalizeModal() {
-            document.getElementById('finalize-overlay').classList.add('show');
-        }
-
-        function closeFinalizeModal() {
-            document.getElementById('finalize-overlay').classList.remove('show');
-        }
-
-        function prepareFinalize() {
+        function submitSimpan() {
             const page = document.getElementById('document-page');
-            document.getElementById('hidden-konten').value = page.innerHTML;
+            
+            // Nonaktifkan mode edit jika sedang aktif agar elemen contenteditable tidak tersimpan dalam state aktif
+            if (editModeActive) {
+                toggleEditMode();
+            }
+
+            document.getElementById('html-content-input').value = page.innerHTML;
+            document.getElementById('simpan-form').submit();
         }
 
         function showToast(message, type) {

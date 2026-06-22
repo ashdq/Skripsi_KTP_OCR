@@ -75,12 +75,14 @@
                                             'menunggu' => 'status-pending',
                                             'diproses' => 'status-process',
                                             'selesai'  => 'status-completed',
+                                            'ditolak'  => 'status-rejected',
                                             default    => 'status-pending',
                                         };
                                         $badgeLabel = match($surat->status) {
                                             'menunggu' => 'Menunggu',
                                             'diproses' => 'Diproses',
                                             'selesai'  => 'Selesai',
+                                            'ditolak'  => 'Ditolak',
                                             default    => ucfirst($surat->status),
                                         };
                                     @endphp
@@ -96,8 +98,8 @@
                                             <i class="fas fa-eye"></i>
                                         </a>
 
-                                        {{-- Generate Surat: muncul saat status menunggu atau diproses --}}
-                                        @if(in_array($surat->status, ['menunggu', 'diproses']))
+                                        {{-- Generate Surat: muncul saat status menunggu --}}
+                                        @if($surat->status === 'menunggu')
                                         <a href="{{ route('petugas.pengajuan.generate', $surat->id) }}"
                                            class="btn-action"
                                            title="Generate Surat"
@@ -106,10 +108,28 @@
                                         </a>
                                         @endif
 
+                                        {{-- Tombol Tolak: muncul saat status menunggu --}}
+                                        @if($surat->status === 'menunggu')
+                                        <form action="{{ route('petugas.pengajuan.tolak', $surat->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Apakah Anda yakin ingin menolak pengajuan surat ini?');">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="btn-action" title="Tolak Pengajuan" style="background:#dc3545; color:#fff; display:inline-flex; align-items:center; justify-content:center; text-decoration:none; border:none; cursor:pointer;">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                        @endif
+
                                         {{-- Surat selesai --}}
                                         @if($surat->status === 'selesai')
                                         <span style="display:inline-flex; align-items:center; gap:0.3rem; padding:0.45rem 0.85rem; background:#d4edda; color:#155724; border-radius:7px; font-size:0.82rem; font-weight:700;">
                                             <i class="fas fa-check-double"></i> Selesai
+                                        </span>
+                                        @endif
+                                        
+                                        {{-- Surat ditolak --}}
+                                        @if($surat->status === 'ditolak')
+                                        <span style="display:inline-flex; align-items:center; gap:0.3rem; padding:0.45rem 0.85rem; background:#f8d7da; color:#721c24; border-radius:7px; font-size:0.82rem; font-weight:700;">
+                                            <i class="fas fa-ban"></i> Ditolak
                                         </span>
                                         @endif
                                     </div>

@@ -121,6 +121,8 @@ class DokumenController extends Controller
             ['warga_id' => $warga->id],
             [
                 'warga_id' => $warga->id,
+                'file_path_ktp' => $finalDocuments['ktp']['path'] ?? null,
+                'file_path_kk' => $finalDocuments['kk']['path'] ?? null,
             ]
         );
 

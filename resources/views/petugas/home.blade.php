@@ -75,9 +75,10 @@
                                     <div class="action-buttons">
                                         @if($surat->status == 'menunggu')
                                             <a href="{{ route('petugas.pengajuan.detail', $surat->id) }}" class="btn-action btn-detail" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">Lihat Detail</a>
-                                            <button class="btn-action btn-verifikasi">Verifikasi</button>
                                         @elseif($surat->status == 'diproses')
                                             <span class="badge" style="padding: 5px 10px; border-radius: 4px; background-color: #f59e0b; color: white; font-weight: 600; font-size: 0.875rem;"><i class="fas fa-spinner fa-spin" style="margin-right: 5px;"></i>Sedang Diproses</span>
+                                        @elseif($surat->status == 'ditolak')
+                                            <span class="badge" style="padding: 5px 10px; border-radius: 4px; background-color: #ef4444; color: white; font-weight: 600; font-size: 0.875rem;"><i class="fas fa-ban" style="margin-right: 5px;"></i>Ditolak</span>
                                         @endif
                                     </div>
                                 </td>

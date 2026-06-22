@@ -14,6 +14,7 @@ class Surat extends Model
         'tanggal_pengajuan',
         'status',
         'file_surat',
+        'html_content',
         'warga_id',
         'petugas_id',
         'ocr_id',
