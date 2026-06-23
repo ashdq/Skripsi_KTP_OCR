@@ -27,6 +27,7 @@
                         <div class="identitas-header">
                             <h2>Data Identitas Pemohon</h2>
                             <p>Jenis Surat: <strong>{{ $surat->jenis_surat }}</strong></p>
+                            <p>Keterangan Pengajuan: <strong>{{ $surat->keterangan ?? '-' }}</strong></p>
                         </div>
 
                         <!-- Grid Data Identitas -->

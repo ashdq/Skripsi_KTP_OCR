@@ -39,6 +39,28 @@ class DatabaseSeeder extends Seeder
                     'role' => 'admin',
                 ]
             );
+
+            $lurahUser = User::firstOrCreate(
+                ['email' => 'lurah@example.com'],
+                [
+                    'password' => bcrypt('password'),
+                    'role' => 'petugas',
+                ]
+            );
+
+            if ($lurahUser->role !== 'petugas') {
+                $lurahUser->update(['role' => 'petugas']);
+            }
+
+            Petugas::updateOrCreate(
+                ['user_id' => $lurahUser->id],
+                [
+                    'nip' => '197010101995031001',
+                    'nama' => 'Bapak Lurah',
+                    'nomor_hp' => '081234567891',
+                    'role' => 'lurah',
+                ]
+            );
         });
     }
 }

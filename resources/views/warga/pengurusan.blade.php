@@ -84,6 +84,11 @@
                                     <option value="Surat Keterangan Kemiskinan">
                                 </datalist>
                             </div>
+                            
+                            <label class="section-label" style="margin-top: 1rem;">Keterangan Pengajuan</label>
+                            <div class="form-group">
+                                <textarea name="keterangan" class="form-input" placeholder="Tuliskan keterangan tambahan untuk pengajuan surat (contoh: untuk keperluan pendaftaran sekolah)" rows="3" required></textarea>
+                            </div>
                         </div>
 
                         <!-- Unggah Dokumen Pendukung -->
@@ -430,6 +435,13 @@
                 return;
             }
 
+            const keteranganSurat = document.querySelector('textarea[name="keterangan"]');
+            if (!keteranganSurat.value.trim()) {
+                alert('⚠️ Silakan isi keterangan pengajuan terlebih dahulu');
+                keteranganSurat.focus();
+                return;
+            }
+
             if (!ktpSelected && !kkSelected && (hasExistingKtp || hasExistingKk)) {
                 uploadStep.classList.add('hidden');
                 identitasSection.classList.remove('hidden');
@@ -473,6 +485,7 @@
             const payload = new FormData();
             payload.append('_token', csrfToken);
             payload.append('jenis_surat', jenisSurat.value);
+            payload.append('keterangan', keteranganSurat.value);
 
             if (ktpSelected) {
                 payload.append('ktp', ktpInput.files[0]);
@@ -735,6 +748,7 @@
 
                 } else if (state === 'kirim') {
                     const jenisSuratVal = document.querySelector('input[name="jenis_surat"]').value;
+                    const keteranganVal = document.querySelector('textarea[name="keterangan"]').value;
                     if (!jenisSuratVal) {
                         alert('Silakan pilih atau ketik jenis surat terlebih dahulu.');
                         return;
@@ -746,6 +760,7 @@
                     const formData = new FormData();
                     formData.append('_token', dokumenForm.querySelector('input[name="_token"]').value);
                     formData.append('jenis_surat', jenisSuratVal);
+                    formData.append('keterangan', keteranganVal);
 
                     fetch('{{ route("warga.pengurusan.kirim-pengajuan") }}', {
                         method: 'POST',

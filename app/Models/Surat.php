@@ -11,6 +11,7 @@ class Surat extends Model
 
     protected $fillable = [
         'jenis_surat',
+        'keterangan',
         'tanggal_pengajuan',
         'status',
         'file_surat',

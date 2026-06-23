@@ -535,6 +535,13 @@
                 <span><strong>Petunjuk:</strong> Klik tombol "Aktifkan Edit" untuk mengedit teks langsung pada preview. Klik bagian teks yang ingin diubah lalu ketik.</span>
             </div>
 
+            @if($surat->keterangan)
+            <div class="petunjuk-bar" style="background: #17a2b8; margin-top: -0.5rem;">
+                <i class="fas fa-comment-dots" style="color: white;"></i>
+                <span><strong>Keterangan dari Warga:</strong> {{ $surat->keterangan }}</span>
+            </div>
+            @endif
+
             {{-- Document Preview --}}
             <div class="document-preview-container" id="document-container">
                 <div class="document-page" id="document-page">

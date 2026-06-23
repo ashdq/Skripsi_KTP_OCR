@@ -1,164 +1,1112 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIA Kelurahan</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <title>Kelurahan Digital - Sistem Informasi Kelurahan</title>
+    <meta name="description" content="Portal Digital Administrasi Kelurahan - Akses Layanan Warga Mudah & Cepat. Pengajuan surat keterangan, pendaftaran penduduk, dan cek status dokumen online.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --green-dark:   #1a3d2b;
+            --green-main:   #1d4d35;
+            --green-mid:    #2e6b4a;
+            --green-light:  #3a8a5e;
+            --green-accent: #4caf78;
+            --white:        #ffffff;
+            --off-white:    #f5f7f5;
+            --text-dark:    #1c2b22;
+            --text-mid:     #4a6358;
+            --text-light:   #7a9a8a;
+            --border:       #d4e4da;
+            --shadow-sm:    0 2px 8px rgba(0,0,0,.08);
+            --shadow-md:    0 8px 32px rgba(0,0,0,.12);
+            --shadow-lg:    0 20px 60px rgba(0,0,0,.18);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* ─── NAVBAR ─────────────────────────────── */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: rgba(26,61,43,.95);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            transition: background .3s;
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .nav-brand-icon {
+            width: 40px; height: 40px;
+            background: rgba(255,255,255,.15);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.1rem;
+        }
+
+        .nav-brand-text {
+            display: flex; flex-direction: column;
+        }
+
+        .nav-brand-sub {
+            font-size: .65rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            color: rgba(255,255,255,.55);
+        }
+
+        .nav-brand-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -.01em;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,.8);
+            text-decoration: none;
+            font-size: .9rem;
+            font-weight: 500;
+            transition: color .2s;
+        }
+
+        .nav-links a:hover { color: white; }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+
+        .btn-outline {
+            padding: .5rem 1.25rem;
+            border-radius: 50px;
+            border: 1.5px solid rgba(255,255,255,.3);
+            background: transparent;
+            color: white;
+            font-size: .875rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all .2s;
+        }
+
+        .btn-outline:hover {
+            border-color: white;
+            background: rgba(255,255,255,.1);
+        }
+
+        .btn-solid {
+            padding: .5rem 1.4rem;
+            border-radius: 50px;
+            border: none;
+            background: var(--green-accent);
+            color: white;
+            font-size: .875rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all .2s;
+        }
+
+        .btn-solid:hover {
+            background: #5bc98a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(76,175,120,.4);
+        }
+
+        /* ─── HERO ────────────────────────────────── */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-main) 55%, #164430 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            padding-top: 68px;
+        }
+
+        /* Decorative blobs */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -100px; right: -100px;
+            width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(76,175,120,.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -80px; left: -80px;
+            width: 350px; height: 350px;
+            background: radial-gradient(circle, rgba(255,255,255,.04) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 2.5rem 2rem;
+            display: grid;
+            grid-template-columns: 1.1fr 1.3fr;
+            gap: 3rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            min-height: calc(100vh - 68px);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            background: rgba(255,255,255,.12);
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: 50px;
+            padding: .4rem 1rem;
+            color: rgba(255,255,255,.9);
+            font-size: .8rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(8px);
+        }
+
+        .hero-badge i { font-size: .7rem; color: var(--green-accent); }
+
+        .hero-title {
+            font-size: clamp(2.2rem, 4vw, 3.2rem);
+            font-weight: 800;
+            color: white;
+            line-height: 1.15;
+            letter-spacing: -.03em;
+            margin-bottom: 1.25rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            color: rgba(255,255,255,.7);
+            line-height: 1.7;
+            margin-bottom: 2.5rem;
+            max-width: 480px;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: .6rem;
+            padding: .85rem 1.8rem;
+            border-radius: 50px;
+            background: var(--green-accent);
+            color: white;
+            font-size: .95rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all .25s;
+            box-shadow: 0 4px 20px rgba(76,175,120,.4);
+        }
+
+        .btn-hero-primary:hover {
+            background: #5bc98a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(76,175,120,.5);
+        }
+
+        .btn-hero-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: .6rem;
+            padding: .85rem 1.8rem;
+            border-radius: 50px;
+            border: 1.5px solid rgba(255,255,255,.3);
+            background: rgba(255,255,255,.08);
+            color: white;
+            font-size: .95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all .25s;
+            backdrop-filter: blur(8px);
+        }
+
+        .btn-hero-secondary:hover {
+            border-color: rgba(255,255,255,.6);
+            background: rgba(255,255,255,.15);
+            transform: translateY(-2px);
+        }
+
+        /* ─── HERO ILLUSTRATION ──────────────────── */
+        .hero-visual {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            align-items: stretch;
+            height: 100%;
+        }
+
+        .hero-building-wrap {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-top: 1rem;
+        }
+
+        /* SVG Kelurahan Building Illustration */
+        .building-scene {
+            width: 100%;
+            height: auto;
+            min-height: 380px;
+        }
+
+        /* ─── FLOATING CARD ──────────────────────── */
+        .floating-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 24px 60px rgba(0,0,0,.22);
+            display: flex;
+            flex-direction: column;
+            gap: .9rem;
+            align-self: center;
+            animation: float 5s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .floating-card-title {
+            font-size: .8rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+        }
+
+        .floating-card-features {
+            display: flex;
+            flex-direction: column;
+            gap: .75rem;
+        }
+
+        .fc-feature {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+        }
+
+        .fc-icon {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .8rem;
+            flex-shrink: 0;
+        }
+
+        .fc-icon.orange { background: #fff4e6; color: #f97316; }
+        .fc-icon.blue { background: #e6f0ff; color: #3b82f6; }
+        .fc-icon.green { background: #e6f7ee; color: #22c55e; }
+
+        .fc-feature-name { font-size: .82rem; font-weight: 700; color: var(--text-dark); }
+        .fc-feature-sub { font-size: .73rem; color: var(--text-light); }
+
+        /* Testimonial mini card */
+        .mini-testimonial {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            box-shadow: var(--shadow-md);
+            margin-top: 1rem;
+            font-size: .8rem;
+            color: var(--text-mid);
+            font-style: italic;
+            line-height: 1.5;
+        }
+
+        .mini-testimonial strong { color: var(--green-dark); font-style: normal; }
+        .mini-testimonial .t-source { font-size: .72rem; color: var(--green-accent); font-style: normal; font-weight: 600; margin-top: .5rem; }
+
+        /* ─── SERVICES SECTION ───────────────────── */
+        .services {
+            background: var(--off-white);
+            padding: 5rem 2rem;
+            position: relative;
+            margin-top: -60px;
+            z-index: 2;
+        }
+
+        .services-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            display: inline-block;
+            font-size: .75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            color: var(--green-accent);
+            margin-bottom: .75rem;
+        }
+
+        .section-title {
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -.02em;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--text-mid);
+            line-height: 1.7;
+            max-width: 520px;
+            margin-bottom: 3rem;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            transition: all .3s ease;
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--green-accent), var(--green-mid));
+            transform: scaleX(0);
+            transition: transform .3s;
+        }
+
+        .service-card:hover::before { transform: scaleX(1); }
+
+        .service-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .service-icon {
+            width: 56px; height: 56px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .service-icon.orange { background: linear-gradient(135deg, #fff4e6, #fde8c8); color: #f97316; }
+        .service-icon.green  { background: linear-gradient(135deg, #e8f5ee, #c8ebd8); color: #22c55e; }
+        .service-icon.blue   { background: linear-gradient(135deg, #e8f0fe, #c8d8fc); color: #3b82f6; }
+
+        .service-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: -.01em;
+            margin-bottom: .75rem;
+            line-height: 1.3;
+        }
+
+        .service-desc {
+            font-size: .875rem;
+            color: var(--text-mid);
+            line-height: 1.65;
+        }
+
+        /* ─── WHY US SECTION ─────────────────────── */
+        .why-us {
+            padding: 5rem 2rem;
+            background: white;
+        }
+
+        .why-us-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: center;
+        }
+
+        .why-us-content { }
+
+        .why-features {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+        }
+
+        .why-feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .why-icon {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .why-icon.orange { background: #fff4e6; color: #f97316; }
+        .why-icon.teal   { background: #e6f9f5; color: #0d9488; }
+        .why-icon.blue   { background: #e6f0ff; color: #3b82f6; }
+
+        .why-feature-name { font-size: .95rem; font-weight: 700; color: var(--text-dark); margin-bottom: .25rem; }
+        .why-feature-sub  { font-size: .85rem; color: var(--text-mid); }
+
+        /* Card column */
+        .why-us-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .info-card.highlight {
+            background: var(--green-main);
+            border-color: transparent;
+        }
+
+        .info-card.highlight .info-title { color: white; }
+        .info-card.highlight .info-body  { color: rgba(255,255,255,.75); }
+        .info-card.highlight .info-source { color: var(--green-accent); }
+
+        .info-title { font-size: .875rem; font-weight: 700; color: var(--text-dark); margin-bottom: .75rem; }
+        .info-body  { font-size: .85rem; color: var(--text-mid); line-height: 1.6; font-style: italic; }
+        .info-source { font-size: .8rem; color: var(--green-accent); font-weight: 700; margin-top: .5rem; }
+
+        .why-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1.25rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--off-white);
+        }
+
+        .stat-number {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--green-main);
+            letter-spacing: -.03em;
+        }
+
+        .stat-label {
+            font-size: .75rem;
+            color: var(--text-mid);
+            margin-top: .25rem;
+            line-height: 1.4;
+        }
+
+        /* ─── FOOTER ─────────────────────────────── */
+        footer {
+            background: var(--green-dark);
+            color: rgba(255,255,255,.8);
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid rgba(255,255,255,.1);
+            margin-bottom: 2rem;
+        }
+
+        .footer-brand { }
+
+        .footer-brand-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: .5rem;
+        }
+
+        .footer-brand-desc {
+            font-size: .85rem;
+            color: rgba(255,255,255,.55);
+            line-height: 1.7;
+            margin-bottom: 1.25rem;
+        }
+
+        .footer-contact-item {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            font-size: .82rem;
+            color: rgba(255,255,255,.6);
+            margin-bottom: .5rem;
+        }
+
+        .footer-contact-item i { color: var(--green-accent); width: 14px; }
+
+        .footer-col-title {
+            font-size: .8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: white;
+            margin-bottom: 1.25rem;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: .6rem;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,.55);
+            text-decoration: none;
+            font-size: .85rem;
+            transition: color .2s;
+        }
+
+        .footer-links a:hover { color: var(--green-accent); }
+
+        .footer-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .8rem;
+            color: rgba(255,255,255,.35);
+        }
+
+        /* ─── SCROLL ANIMATIONS ──────────────────── */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity .6s ease, transform .6s ease;
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-up.delay-1 { transition-delay: .1s; }
+        .fade-up.delay-2 { transition-delay: .2s; }
+        .fade-up.delay-3 { transition-delay: .3s; }
+
+        /* ─── RESPONSIVE ─────────────────────────── */
+        @media (max-width: 900px) {
+            .hero-inner { grid-template-columns: 1fr; text-align: center; gap: 2rem; }
+            .hero-visual { display: none; }
+            .hero-cta { justify-content: center; }
+            .services-grid { grid-template-columns: 1fr; }
+            .why-us-inner { grid-template-columns: 1fr; gap: 3rem; }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+            .nav-links { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            .footer-grid { grid-template-columns: 1fr; }
+            .why-stats { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white">
-    <div class="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(45,212,191,.22),_transparent_32%),linear-gradient(135deg,_#042f2e_0%,_#0f172a_55%,_#020617_100%)]">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(251,191,36,.12),_transparent_28%),radial-gradient(circle_at_bottom_left,_rgba(45,212,191,.12),_transparent_32%)]"></div>
+<body>
 
-        <header class="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-6">
-            <div>
-                <p class="text-xs uppercase tracking-[0.3em] text-teal-100/80">Sistem Informasi Kelurahan</p>
-                <h1 class="mt-2 text-2xl font-semibold text-white">Pelayanan surat jadi lebih cepat dan rapi</h1>
+<!-- ─── NAVBAR ─────────────────────────────────── -->
+<nav class="navbar">
+    <div class="nav-inner">
+        <a href="/" class="nav-brand">
+            <div class="nav-brand-icon">
+                <i class="fas fa-home"></i>
             </div>
-
-            <div class="flex items-center gap-3">
-                <a href="{{ route('login') }}" class="rounded-full border border-white/20 bg-white/10 px-5 py-2 text-sm font-medium text-white backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/20">
-                    Login
-                </a>
-                <a href="{{ route('register') }}" class="rounded-full bg-amber-300 px-5 py-2 text-sm font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-white">
-                    Register
-                </a>
+            <div class="nav-brand-text">
+                <span class="nav-brand-sub">Sistem Informasi Kelurahan</span>
+                <span class="nav-brand-name">Kelurahan Digital</span>
             </div>
-        </header>
+        </a>
 
-        <main class="relative z-10 mx-auto grid min-h-[calc(100vh-96px)] w-full max-w-7xl items-center gap-12 px-6 py-12 lg:grid-cols-[1.1fr_0.9fr]">
-            <section class="max-w-2xl">
-                <p class="mb-4 inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm text-teal-50 backdrop-blur">Akses layanan warga dalam satu pintu</p>
-                <h2 class="text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl">Landing page untuk masuk ke sistem, login, atau register.</h2>
-                <p class="mt-6 max-w-xl text-base leading-8 text-slate-300">
-                    Gunakan halaman ini sebagai pintu utama sebelum masuk ke fitur autentikasi Laravel Breeze, termasuk login, register, ubah profil, dan pengelolaan akun.
-                </p>
+        <ul class="nav-links">
+            <li><a href="#layanan">Layanan</a></li>
+            <li><a href="#tentang">Tentang</a></li>
+            <li><a href="#kontak">Kontak</a></li>
+        </ul>
 
-                <div class="mt-8 flex flex-wrap gap-4">
-                    <a href="{{ route('login') }}" class="rounded-full bg-teal-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-teal-700">
-                        Masuk Sekarang
-                    </a>
-                    <a href="{{ route('register') }}" class="rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/10">
-                        Buat Akun
-                    </a>
-                </div>
-
-                <div class="mt-10 grid gap-4 sm:grid-cols-3">
-                    <div class="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                        <p class="text-sm text-slate-300">Autentikasi</p>
-                        <p class="mt-2 text-lg font-semibold">Login / Register</p>
-                    </div>
-                    <div class="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                        <p class="text-sm text-slate-300">Profil</p>
-                        <p class="mt-2 text-lg font-semibold">Ubah data akun</p>
-                    </div>
-                    <div class="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                        <p class="text-sm text-slate-300">Layanan</p>
-                        <p class="mt-2 text-lg font-semibold">Warga & Petugas</p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="relative">
-                <div class="absolute -inset-6 rounded-[2rem] bg-[radial-gradient(circle_at_top,_rgba(45,212,191,.2),_transparent_40%)] blur-2xl"></div>
-                <div class="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/10 p-8 shadow-[0_30px_80px_rgba(2,6,23,.35)] backdrop-blur">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-xs uppercase tracking-[0.24em] text-teal-100/70">Portal Masuk</p>
-                            <h3 class="mt-2 text-2xl font-semibold text-white">SIA Kelurahan</h3>
-                        </div>
-                        <div class="rounded-full bg-emerald-600 p-3 text-xs font-semibold text-white">Breeze</div>
-                    </div>
-
-                    <div class="mt-8 space-y-4">
-                        <div class="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
-                            <p class="text-sm text-slate-300">Akun warga</p>
-                            <p class="mt-1 text-base font-medium text-white">Masuk untuk ajukan surat, unduh dokumen, dan cek status.</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
-                            <p class="text-sm text-slate-300">Akun petugas</p>
-                            <p class="mt-1 text-base font-medium text-white">Kelola pengajuan, verifikasi, dan tanda tangan surat.</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
-                            <p class="text-sm text-slate-300">Profil pengguna</p>
-                            <p class="mt-1 text-base font-medium text-white">Buka dari ikon user di kanan atas setelah login.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
+        <div class="nav-actions">
+            <a href="{{ route('login') }}" class="btn-outline">Login</a>
+            <a href="{{ route('register') }}" class="btn-solid">Daftar</a>
+        </div>
     </div>
-</body>
-</html>
-                            <path d="M204.592 327.449L204.923 327.449C211.769 320.564 222.094 311.479 235.897 300.196C249.258 288.912 259.306 279.923 266.042 273.23C272.668 266.345 277.195 259.077 279.624 251.427C282.053 243.777 280.893 235.839 276.145 227.615C270.844 218.435 263.39 211.071 253.782 205.524C244.285 199.786 234.236 196.917 223.635 196.916C213.255 196.916 206.464 199.689 203.262 205.235C199.949 210.59 201.054 218.049 206.575 227.612L141.975 227.61C132.699 211.544 128.723 197.2 130.048 184.577C131.593 171.954 137.887 162.2 148.93 155.315C160.083 148.239 174.935 144.701 193.487 144.702C212.922 144.703 232.192 148.242 251.296 155.319C270.289 162.205 287.627 171.96 303.308 184.583C318.989 197.207 331.468 211.552 340.745 227.618C349.358 242.536 353.169 255.637 352.175 266.921C351.403 278.205 347.704 288.055 341.078 296.47C334.674 304.885 324.736 315.213 311.264 327.453L393.422 327.456L422.246 377.375L233.415 377.368L204.592 327.449Z" stroke="#FF750F" stroke-width="1"/>
-                            <path d="M25.447 198.058L2.58852 198.057L-26.4005 147.851L59.4015 147.854L191.923 377.368L128.979 377.365L25.447 198.058Z" stroke="#FF750F" stroke-width="1"/>
-                        </g>
-                        <g class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4" style="mix-blend-mode:hard-light">
-                            <path d="M217.342 305.363L217.673 305.363C224.519 298.478 234.844 289.393 248.647 278.11C262.008 266.826 272.056 257.837 278.792 251.144C285.418 244.259 289.945 236.991 292.374 229.341C294.803 221.691 293.643 213.753 288.895 205.529C283.594 196.349 276.14 188.985 266.532 183.438C257.035 177.7 246.986 174.831 236.385 174.83C226.005 174.83 219.214 177.603 216.012 183.149C212.699 188.504 213.804 195.963 219.325 205.527L154.725 205.524C145.449 189.458 141.473 175.114 142.798 162.491C144.343 149.868 150.637 140.114 161.68 133.229C172.833 126.153 187.685 122.615 206.237 122.616C225.672 122.617 244.942 126.156 264.046 133.233C283.039 140.119 300.377 149.874 316.058 162.497C331.739 175.121 344.218 189.466 353.495 205.532C362.108 220.45 365.919 233.551 364.925 244.835C364.153 256.12 360.454 265.969 353.828 274.384C347.424 282.799 337.486 293.127 324.014 305.367L406.172 305.37L434.996 355.289L246.165 355.282L217.342 305.363Z" fill="#733000"/>
-                            <path d="M38.197 175.972L15.3385 175.971L-13.6505 125.765L72.1515 125.768L204.673 355.282L141.729 355.279L38.197 175.972Z" fill="#733000"/>
-                            <path d="M217.342 305.363L217.673 305.363C224.519 298.478 234.844 289.393 248.647 278.11C262.008 266.826 272.056 257.837 278.792 251.144C285.418 244.259 289.945 236.991 292.374 229.341C294.803 221.691 293.643 213.753 288.895 205.529C283.594 196.349 276.14 188.985 266.532 183.438C257.035 177.7 246.986 174.831 236.385 174.83C226.005 174.83 219.214 177.603 216.012 183.149C212.699 188.504 213.804 195.963 219.325 205.527L154.725 205.524C145.449 189.458 141.473 175.114 142.798 162.491C144.343 149.868 150.637 140.114 161.68 133.229C172.833 126.153 187.685 122.615 206.237 122.616C225.672 122.617 244.942 126.156 264.046 133.233C283.039 140.119 300.377 149.874 316.058 162.497C331.739 175.121 344.218 189.466 353.495 205.532C362.108 220.45 365.919 233.551 364.925 244.835C364.153 256.12 360.454 265.969 353.828 274.384C347.424 282.799 337.486 293.127 324.014 305.367L406.172 305.37L434.996 355.289L246.165 355.282L217.342 305.363Z" stroke="#FF750F" stroke-width="1"/>
-                            <path d="M38.197 175.972L15.3385 175.971L-13.6505 125.765L72.1515 125.768L204.673 355.282L141.729 355.279L38.197 175.972Z" stroke="#FF750F" stroke-width="1"/>
-                        </g>
-                        <g class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4">
-                            <path d="M217.342 305.363L217.673 305.363C224.519 298.478 234.844 289.393 248.647 278.11C262.008 266.826 272.056 257.837 278.792 251.144C285.418 244.259 289.945 236.991 292.374 229.341C294.803 221.691 293.643 213.753 288.895 205.529C283.594 196.349 276.14 188.985 266.532 183.438C257.035 177.7 246.986 174.831 236.385 174.83C226.005 174.83 219.214 177.603 216.012 183.149C212.699 188.504 213.804 195.963 219.325 205.527L154.726 205.524C145.449 189.458 141.473 175.114 142.798 162.491C144.343 149.868 150.637 140.114 161.68 133.229C172.833 126.153 187.685 122.615 206.237 122.616C225.672 122.617 244.942 126.156 264.046 133.233C283.039 140.119 300.377 149.874 316.058 162.497C331.739 175.121 344.218 189.466 353.495 205.532C362.108 220.45 365.919 233.551 364.925 244.835C364.153 256.12 360.454 265.969 353.828 274.384C347.424 282.799 337.486 293.127 324.014 305.367L406.172 305.37L434.996 355.289L246.165 355.282L217.342 305.363Z" stroke="#FF750F" stroke-width="1"/>
-                            <path d="M38.197 175.972L15.3385 175.971L-13.6505 125.765L72.1515 125.768L204.673 355.282L141.729 355.279L38.197 175.972Z" stroke="#FF750F" stroke-width="1"/>
-                        </g>
-                        <g class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4">
-                            <path d="M188.467 355.363L188.798 355.363C195.644 348.478 205.969 339.393 219.772 328.11C233.133 316.826 243.181 307.837 249.917 301.144C253.696 297.217 256.792 293.166 259.205 288.991C261.024 285.845 262.455 282.628 263.499 279.341C265.928 271.691 264.768 263.753 260.02 255.529C254.719 246.349 247.265 238.985 237.657 233.438C228.16 227.7 218.111 224.831 207.51 224.83C197.13 224.83 190.339 227.603 187.137 233.149C183.824 238.504 184.929 245.963 190.45 255.527L125.851 255.524C116.574 239.458 112.598 225.114 113.923 212.491C114.615 206.836 116.261 201.756 118.859 197.253C122.061 191.704 126.709 187.03 132.805 183.229C143.958 176.153 158.81 172.615 177.362 172.616C196.797 172.617 216.067 176.156 235.171 183.233C254.164 190.119 271.502 199.874 287.183 212.497C302.864 225.121 315.343 239.466 324.62 255.532C333.233 270.45 337.044 283.551 336.05 294.835C335.46 303.459 333.16 311.245 329.151 318.194C327.915 320.337 326.515 322.4 324.953 324.384C318.549 332.799 308.611 343.127 295.139 355.367L377.297 355.37L406.121 405.289L217.29 405.282L188.467 355.363Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M9.32197 225.972L-13.5365 225.971L-42.5255 175.765L43.2765 175.768L175.798 405.282L112.854 405.279L9.32197 225.972Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M345.247 111.915C329.566 99.2919 312.229 89.5371 293.235 82.6512L235.167 183.228C254.161 190.114 271.498 199.869 287.179 212.492L345.247 111.915Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M382.686 154.964C373.41 138.898 360.931 124.553 345.25 111.93L287.182 212.506C302.863 225.13 315.342 239.475 324.618 255.541L382.686 154.964Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M293.243 82.6472C274.139 75.57 254.869 72.031 235.434 72.0303L177.366 172.607C196.801 172.608 216.071 176.147 235.175 183.224L293.243 82.6472Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M394.118 194.257C395.112 182.973 391.301 169.872 382.688 154.953L324.619 255.53C333.233 270.448 337.044 283.55 336.05 294.834L394.118 194.257Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M235.432 72.0311C216.88 72.0304 202.027 75.5681 190.875 82.6442L132.806 183.221C143.959 176.145 158.812 172.607 177.363 172.608L235.432 72.0311Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M265.59 124.25C276.191 124.251 286.24 127.12 295.737 132.858L237.669 233.435C228.172 227.697 218.123 224.828 207.522 224.827L265.59 124.25Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M295.719 132.859C305.326 138.406 312.78 145.77 318.081 154.95L260.013 255.527C254.712 246.347 247.258 238.983 237.651 233.436L295.719 132.859Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M387.218 217.608C391.227 210.66 393.527 202.874 394.117 194.25L336.049 294.827C335.459 303.451 333.159 311.237 329.15 318.185L387.218 217.608Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M245.211 132.577C248.413 127.03 255.204 124.257 265.584 124.258L207.516 224.835C197.136 224.834 190.345 227.607 187.143 233.154L245.211 132.577Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M318.094 154.945C322.842 163.17 324.002 171.107 321.573 178.757L263.505 279.334C265.934 271.684 264.774 263.746 260.026 255.522L318.094 154.945Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M176.925 96.6737C180.127 91.1249 184.776 86.4503 190.871 82.6499L132.803 183.227C126.708 187.027 122.059 191.702 118.857 197.25L176.925 96.6737Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M387.226 217.606C385.989 219.749 384.59 221.813 383.028 223.797L324.96 324.373C326.522 322.39 327.921 320.326 329.157 318.183L387.226 217.606Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M317.269 188.408C319.087 185.262 320.519 182.045 321.562 178.758L263.494 279.335C262.451 282.622 261.019 285.839 259.201 288.985L317.269 188.408Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M245.208 132.573C241.895 137.928 243 145.387 248.522 154.95L190.454 255.527C184.932 245.964 183.827 238.505 187.14 233.15L245.208 132.573Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M176.93 96.6719C174.331 101.175 172.686 106.255 171.993 111.91L113.925 212.487C114.618 206.831 116.263 201.752 118.862 197.249L176.93 96.6719Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M317.266 188.413C314.853 192.589 311.757 196.64 307.978 200.566L249.91 301.143C253.689 297.216 256.785 293.166 259.198 288.99L317.266 188.413Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M464.198 304.708L435.375 254.789L377.307 355.366L406.13 405.285L464.198 304.708Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M353.209 254.787C366.68 242.548 376.618 232.22 383.023 223.805L324.955 324.382C318.55 332.797 308.612 343.124 295.141 355.364L353.209 254.787Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M435.37 254.787L353.212 254.784L295.144 355.361L377.302 355.364L435.37 254.787Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M183.921 154.947L248.521 154.95L190.453 255.527L125.853 255.524L183.921 154.947Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M171.992 111.914C170.668 124.537 174.643 138.881 183.92 154.947L125.852 255.524C116.575 239.458 112.599 225.114 113.924 212.491L171.992 111.914Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M307.987 200.562C301.251 207.256 291.203 216.244 277.842 227.528L219.774 328.105C233.135 316.821 243.183 307.832 249.919 301.139L307.987 200.562Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M15.5469 75.1797L44.5359 125.386L-13.5321 225.963L-42.5212 175.756L15.5469 75.1797Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M277.836 227.536C264.033 238.82 253.708 247.904 246.862 254.789L188.794 355.366C195.64 348.481 205.965 339.397 219.768 328.113L277.836 227.536Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M275.358 304.706L464.189 304.713L406.12 405.29L217.29 405.283L275.358 304.706Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M44.5279 125.39L67.3864 125.39L9.31834 225.967L-13.5401 225.966L44.5279 125.39Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M101.341 75.1911L233.863 304.705L175.795 405.282L43.2733 175.768L101.341 75.1911ZM15.5431 75.19L-42.525 175.767L43.277 175.77L101.345 75.1932L15.5431 75.19Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M246.866 254.784L246.534 254.784L188.466 355.361L188.798 355.361L246.866 254.784Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M246.539 254.781L275.362 304.701L217.294 405.277L188.471 355.358L246.539 254.781Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M67.3906 125.391L170.923 304.698L112.855 405.275L9.32257 225.967L67.3906 125.391Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                            <path d="M170.921 304.699L233.865 304.701L175.797 405.278L112.853 405.276L170.921 304.699Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="bevel"/>
-                        </g>
-                        <g class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4" style="mix-blend-mode:hard-light">
-                            <path d="M246.544 254.79L246.875 254.79C253.722 247.905 264.046 238.82 277.849 227.537C291.21 216.253 301.259 207.264 307.995 200.57C314.62 193.685 319.147 186.418 321.577 178.768C324.006 171.117 322.846 163.18 318.097 154.956C312.796 145.775 305.342 138.412 295.735 132.865C286.238 127.127 276.189 124.258 265.588 124.257C255.208 124.257 248.416 127.03 245.214 132.576C241.902 137.931 243.006 145.39 248.528 154.953L183.928 154.951C174.652 138.885 170.676 124.541 172 111.918C173.546 99.2946 179.84 89.5408 190.882 82.6559C202.035 75.5798 216.887 72.0421 235.439 72.0428C254.874 72.0435 274.144 75.5825 293.248 82.6598C312.242 89.5457 329.579 99.3005 345.261 111.924C360.942 124.548 373.421 138.892 382.697 154.958C391.311 169.877 395.121 182.978 394.128 194.262C393.355 205.546 389.656 215.396 383.031 223.811C376.627 232.226 366.688 242.554 353.217 254.794L435.375 254.797L464.198 304.716L275.367 304.709L246.544 254.79Z" fill="#4B0600"/>
-                            <path d="M246.544 254.79L246.875 254.79C253.722 247.905 264.046 238.82 277.849 227.537C291.21 216.253 301.259 207.264 307.995 200.57C314.62 193.685 319.147 186.418 321.577 178.768C324.006 171.117 322.846 163.18 318.097 154.956C312.796 145.775 305.342 138.412 295.735 132.865C286.238 127.127 276.189 124.258 265.588 124.257C255.208 124.257 248.416 127.03 245.214 132.576C241.902 137.931 243.006 145.39 248.528 154.953L183.928 154.951C174.652 138.885 170.676 124.541 172 111.918C173.546 99.2946 179.84 89.5408 190.882 82.6559C202.035 75.5798 216.887 72.0421 235.439 72.0428C254.874 72.0435 274.144 75.5825 293.248 82.6598C312.242 89.5457 329.579 99.3005 345.261 111.924C360.942 124.548 373.421 138.892 382.697 154.958C391.311 169.877 395.121 182.978 394.128 194.262C393.355 205.546 389.656 215.396 383.031 223.811C376.627 232.226 366.688 242.554 353.217 254.794L435.375 254.797L464.198 304.716L275.367 304.709L246.544 254.79Z" stroke="#FF750F" stroke-width="1" stroke-linejoin="round"/>
-                        </g>
-                        <g class="transition-all delay-300 translate-y-0 opacity-100 duration-750 starting:opacity-0 starting:translate-y-4" style="mix-blend-mode:hard-light">
-                            <path d="M67.41 125.402L44.5515 125.401L15.5625 75.1953L101.364 75.1985L233.886 304.712L170.942 304.71L67.41 125.402Z" fill="#4B0600"/>
-                            <path d="M67.41 125.402L44.5515 125.401L15.5625 75.1953L101.364 75.1985L233.886 304.712L170.942 304.71L67.41 125.402Z" stroke="#FF750F" stroke-width="1"/>
-                        </g>
-                    </svg>
-                    <div class="absolute inset-0 rounded-t-lg lg:rounded-t-none lg:rounded-r-lg shadow-[inset_0px_0px_0px_1px_rgba(26,26,0,0.16)] dark:shadow-[inset_0px_0px_0px_1px_#fffaed2d]"></div>
-                </div>
-            </main>
+</nav>
+
+<!-- ─── HERO ─────────────────────────────────────── -->
+<section class="hero">
+    <div class="hero-inner">
+        <!-- Left: Copy -->
+        <div class="hero-content">
+            <span class="hero-badge">
+                <i class="fas fa-circle"></i>
+                Akses layanan warga dalam satu pintu
+            </span>
+
+            <h1 class="hero-title">
+                Pelayanan surat<br>jadi lebih cepat<br>dan rapi
+            </h1>
+
+            <p class="hero-subtitle">
+                Portal Digital Administrasi Kelurahan – Akses Layanan Warga Mudah &amp; Cepat
+            </p>
+
+            <div class="hero-cta">
+                <a href="{{ route('login') }}" class="btn-hero-primary" id="btn-masuk">
+                    <i class="fas fa-sign-in-alt"></i> Masuk Sekarang
+                </a>
+                <a href="{{ route('register') }}" class="btn-hero-secondary" id="btn-buat-akun">
+                    <i class="fas fa-user-plus"></i> Buat Akun
+                </a>
+            </div>
         </div>
 
-        @if (Route::has('login'))
-            <div class="h-14.5 hidden lg:block"></div>
-        @endif
-    </body>
+        <!-- Right: Illustration + Floating Card side by side -->
+        <div class="hero-visual">
+            <!-- Left col: Building SVG -->
+            <div class="hero-building-wrap">
+                <svg class="building-scene" viewBox="0 0 380 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Sky gradient overlay -->
+                    <defs>
+                        <radialGradient id="glow" cx="50%" cy="40%" r="50%">
+                            <stop offset="0%" stop-color="rgba(76,175,120,.18)"/>
+                            <stop offset="100%" stop-color="transparent"/>
+                        </radialGradient>
+                    </defs>
+                    <ellipse cx="190" cy="180" rx="180" ry="160" fill="url(#glow)"/>
+
+                    <!-- Ground -->
+                    <rect x="0" y="420" width="380" height="60" fill="rgba(255,255,255,.06)"/>
+                    <!-- Ground line -->
+                    <line x1="0" y1="420" x2="380" y2="420" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+
+                    <!-- Left tree -->
+                    <ellipse cx="32" cy="340" rx="28" ry="44" fill="rgba(76,175,120,.28)"/>
+                    <ellipse cx="32" cy="315" rx="22" ry="36" fill="rgba(76,175,120,.2)"/>
+                    <rect x="26" y="375" width="12" height="48" rx="4" fill="rgba(76,175,120,.2)"/>
+                    <!-- Left tree 2 -->
+                    <ellipse cx="62" cy="355" rx="20" ry="32" fill="rgba(76,175,120,.18)"/>
+                    <rect x="57" y="382" width="10" height="40" rx="3" fill="rgba(76,175,120,.15)"/>
+
+                    <!-- Right tree -->
+                    <ellipse cx="348" cy="335" rx="26" ry="42" fill="rgba(76,175,120,.25)"/>
+                    <ellipse cx="348" cy="312" rx="20" ry="32" fill="rgba(76,175,120,.18)"/>
+                    <rect x="342" y="370" width="12" height="52" rx="4" fill="rgba(76,175,120,.18)"/>
+
+                    <!-- Building main body -->
+                    <rect x="75" y="195" width="230" height="230" rx="6" fill="rgba(255,255,255,.1)"/>
+                    <rect x="75" y="195" width="230" height="230" rx="6" stroke="rgba(255,255,255,.22)" stroke-width="2"/>
+
+                    <!-- Roof triangle -->
+                    <polygon points="55,200 190,85 325,200" fill="rgba(255,255,255,.16)"/>
+                    <polygon points="55,200 190,85 325,200" stroke="rgba(255,255,255,.28)" stroke-width="2" fill="none"/>
+
+                    <!-- Roof ridge detail -->
+                    <line x1="55" y1="200" x2="325" y2="200" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/>
+
+                    <!-- Flag pole -->
+                    <line x1="190" y1="84" x2="190" y2="48" stroke="rgba(255,255,255,.55)" stroke-width="2.5"/>
+                    <!-- Flag -->
+                    <rect x="190" y="48" width="34" height="20" rx="3" fill="rgba(76,175,120,.75)"/>
+                    <line x1="207" y1="53" x2="207" y2="63" stroke="rgba(255,255,255,.4)" stroke-width="1"/>
+
+                    <!-- KELURAHAN sign -->
+                    <rect x="110" y="210" width="160" height="32" rx="5" fill="rgba(76,175,120,.45)"/>
+                    <rect x="110" y="210" width="160" height="32" rx="5" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+                    <text x="190" y="231" text-anchor="middle" font-family="Arial" font-weight="800" font-size="11" fill="white" letter-spacing="2.5">KELURAHAN</text>
+
+                    <!-- Windows row -->
+                    <rect x="92"  y="260" width="44" height="38" rx="4" fill="rgba(255,255,255,.13)" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+                    <rect x="148" y="260" width="44" height="38" rx="4" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+                    <rect x="204" y="260" width="44" height="38" rx="4" fill="rgba(255,255,255,.13)" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+                    <rect x="260" y="260" width="44" height="38" rx="4" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+
+                    <!-- Window cross lines -->
+                    <line x1="114" y1="260" x2="114" y2="298" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+                    <line x1="92"  y1="279" x2="136" y2="279" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+                    <line x1="170" y1="260" x2="170" y2="298" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+                    <line x1="148" y1="279" x2="192" y2="279" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+                    <line x1="226" y1="260" x2="226" y2="298" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+                    <line x1="204" y1="279" x2="248" y2="279" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+                    <line x1="282" y1="260" x2="282" y2="298" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+                    <line x1="260" y1="279" x2="304" y2="279" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+
+                    <!-- Door -->
+                    <rect x="155" y="328" width="70" height="97" rx="7" fill="rgba(76,175,120,.35)" stroke="rgba(255,255,255,.22)" stroke-width="1.5"/>
+                    <rect x="162" y="336" width="27" height="89" rx="3" fill="rgba(255,255,255,.08)"/>
+                    <rect x="191" y="336" width="27" height="89" rx="3" fill="rgba(255,255,255,.08)"/>
+                    <circle cx="188" cy="378" r="3.5" fill="rgba(255,255,255,.65)"/>
+                    <circle cx="193" cy="378" r="3.5" fill="rgba(255,255,255,.65)"/>
+                    <!-- Door arch top -->
+                    <path d="M155,345 Q190,315 225,345" fill="rgba(76,175,120,.25)" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+
+                    <!-- Steps -->
+                    <rect x="130" y="420" width="120" height="10" rx="2" fill="rgba(255,255,255,.18)"/>
+                    <rect x="142" y="412" width="96" height="10" rx="2" fill="rgba(255,255,255,.13)"/>
+                    <rect x="152" y="404" width="76" height="10" rx="2" fill="rgba(255,255,255,.10)"/>
+
+                    <!-- Columns/pillars -->
+                    <rect x="105" y="328" width="16" height="97" rx="3" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+                    <rect x="259" y="328" width="16" height="97" rx="3" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+
+                    <!-- Person 1 - woman with tablet, left -->
+                    <circle cx="55" cy="365" r="13" fill="rgba(255,255,255,.28)"/>
+                    <rect x="47" y="378" width="16" height="45" rx="8" fill="rgba(255,255,255,.22)"/>
+                    <rect x="36" y="382" width="14" height="7" rx="3.5" fill="rgba(255,255,255,.18)"/>
+                    <rect x="63" y="380" width="12" height="16" rx="3" fill="rgba(255,255,255,.38)"/>
+
+                    <!-- Person 2 - man, right -->
+                    <circle cx="325" cy="362" r="13" fill="rgba(76,175,120,.45)"/>
+                    <rect x="317" y="375" width="16" height="47" rx="8" fill="rgba(76,175,120,.35)"/>
+                    <rect x="308" y="382" width="12" height="7" rx="3.5" fill="rgba(76,175,120,.28)"/>
+                    <rect x="333" y="382" width="12" height="7" rx="3.5" fill="rgba(76,175,120,.28)"/>
+
+                    <!-- Person 3 - near building left -->
+                    <circle cx="105" cy="375" r="11" fill="rgba(255,255,255,.22)"/>
+                    <rect x="98" y="386" width="14" height="37" rx="7" fill="rgba(255,255,255,.18)"/>
+                    <!-- clipboard -->
+                    <rect x="111" y="384" width="11" height="14" rx="2" fill="rgba(255,255,255,.4)"/>
+
+                    <!-- Person 4 - near building right -->
+                    <circle cx="275" cy="372" r="11" fill="rgba(76,175,120,.4)"/>
+                    <rect x="268" y="383" width="14" height="40" rx="7" fill="rgba(76,175,120,.3)"/>
+                    <rect x="282" y="385" width="9" height="12" rx="2" fill="rgba(255,255,255,.3)"/>
+
+                    <!-- Decorative dots -->
+                    <circle cx="20" cy="200" r="2" fill="rgba(255,255,255,.2)"/>
+                    <circle cx="10" cy="240" r="1.5" fill="rgba(255,255,255,.15)"/>
+                    <circle cx="360" cy="190" r="2" fill="rgba(255,255,255,.2)"/>
+                    <circle cx="370" cy="230" r="1.5" fill="rgba(255,255,255,.15)"/>
+                </svg>
+            </div>
+
+            <!-- Right col: Why Choose Us card -->
+            <div class="floating-card">
+                <div class="floating-card-title">Why Choose Us</div>
+                <div class="floating-card-features">
+                    <div class="fc-feature">
+                        <div class="fc-icon orange"><i class="fas fa-bolt"></i></div>
+                        <div>
+                            <div class="fc-feature-name">Efisien</div>
+                            <div class="fc-feature-sub">(Hemat Waktu)</div>
+                        </div>
+                    </div>
+                    <div class="fc-feature">
+                        <div class="fc-icon blue"><i class="fas fa-file-alt"></i></div>
+                        <div>
+                            <div class="fc-feature-name">Transparan</div>
+                            <div class="fc-feature-sub">(Proses Terbuka)</div>
+                        </div>
+                    </div>
+                    <div class="fc-feature">
+                        <div class="fc-icon green"><i class="fas fa-clock"></i></div>
+                        <div>
+                            <div class="fc-feature-name">Akses 24/7</div>
+                            <div class="fc-feature-sub">(Kapan Saja)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mini-testimonial">
+                    "Sangat mudah! Surat domisili selesai dalam hitungan menit tanpa perlu antri."
+                    <div class="t-source">Warga Kelurahan Talun &bull; Satisfied ★★★★★</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── SERVICES SECTION ──────────────────────────── -->
+<section class="services" id="layanan">
+    <div class="services-inner">
+        <div class="fade-up">
+            <span class="section-label">Layanan Kami</span>
+            <h2 class="section-title">Semua Kebutuhan Administrasi<br>Ada di Sini</h2>
+            <p class="section-subtitle">
+                Nikmati kemudahan mengurus berbagai kebutuhan administrasi kelurahan tanpa perlu antri.
+            </p>
+        </div>
+
+        <div class="services-grid">
+            <div class="service-card fade-up delay-1">
+                <div class="service-icon orange">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="service-title">Pendaftaran Penduduk</h3>
+                <p class="service-desc">
+                    Layanan pendaftaran lahir, pindah, dan data kependudukan online.
+                </p>
+            </div>
+
+            <div class="service-card fade-up delay-2">
+                <div class="service-icon green">
+                    <i class="fas fa-pen-fancy"></i>
+                </div>
+                <h3 class="service-title">Pengajuan Surat Keterangan</h3>
+                <p class="service-desc">
+                    Ajukan berbagai surat keterangan resmi secara digital tanpa ribet.
+                </p>
+            </div>
+
+            <div class="service-card fade-up delay-3">
+                <div class="service-icon blue">
+                    <i class="fas fa-list-check"></i>
+                </div>
+                <h3 class="service-title">Cek Status &amp; Dokumen</h3>
+                <p class="service-desc">
+                    Lacak status pengajuan surat Anda dan unduh dokumen yang sudah jadi.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── WHY CHOOSE US ─────────────────────────────── -->
+<section class="why-us" id="tentang">
+    <div class="why-us-inner">
+        <div class="why-us-content fade-up">
+            <span class="section-label">Mengapa Memilih Kami</span>
+            <h2 class="section-title">Why Choose Us</h2>
+            <p class="section-subtitle">
+                Sistem kami dirancang untuk mempermudah warga mengakses layanan kelurahan kapan saja dan di mana saja.
+            </p>
+
+            <div class="why-features">
+                <div class="why-feature">
+                    <div class="why-icon orange"><i class="fas fa-bolt"></i></div>
+                    <div>
+                        <div class="why-feature-name">Efisien <span style="color:var(--text-light); font-weight:400;">(Hemat Waktu)</span></div>
+                        <div class="why-feature-sub">Proses pengajuan surat lebih cepat tanpa perlu datang ke kantor.</div>
+                    </div>
+                </div>
+
+                <div class="why-feature">
+                    <div class="why-icon teal"><i class="fas fa-file-alt"></i></div>
+                    <div>
+                        <div class="why-feature-name">Transparan <span style="color:var(--text-light); font-weight:400;">(Proses Terbuka)</span></div>
+                        <div class="why-feature-sub">Status pengajuan dapat dipantau secara real-time kapan saja.</div>
+                    </div>
+                </div>
+
+                <div class="why-feature">
+                    <div class="why-icon blue"><i class="fas fa-clock"></i></div>
+                    <div>
+                        <div class="why-feature-name">Akses 24/7 <span style="color:var(--text-light); font-weight:400;">(Kapan Saja)</span></div>
+                        <div class="why-feature-sub">Akses portal kapan pun Anda butuhkan, 24 jam sehari.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="why-us-cards fade-up delay-2">
+            <div class="why-stats">
+                <div class="stat-item">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Warga Terlayani</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Jenis Layanan</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Akses Portal</div>
+                </div>
+            </div>
+
+            <div class="info-card highlight">
+                <div class="info-title">Testimoni Warga</div>
+                <div class="info-body">
+                    "Sangat membantu! Proses pengajuan surat domisili jadi jauh lebih mudah dan cepat. Tidak perlu antri berjam-jam lagi."
+                </div>
+                <div class="info-source">Warga Kelurahan Talun &bull; Satisfied ★★★★★</div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-title">Keamanan Data Terjamin</div>
+                <div class="info-body" style="font-style:normal; color: var(--text-mid);">
+                    Data pribadi Anda dilindungi dengan sistem enkripsi terkini sesuai dengan peraturan perlindungan data yang berlaku.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── FOOTER ─────────────────────────────────────── -->
+<footer id="kontak">
+    <div class="footer-inner">
+        <div class="footer-grid">
+            <!-- Brand -->
+            <div class="footer-brand">
+                <div class="footer-brand-name">Kelurahan Digital</div>
+                <div class="footer-brand-desc">
+                    Portal administrasi digital Kelurahan Talun, Kecamatan Talun, Kabupaten Blitar. Melayani warga dengan cepat, tepat, dan transparan.
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-map-marker-alt"></i> Kelurahan Talun, Blitar
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-phone"></i> (0342) 692 809
+                </div>
+                <div class="footer-contact-item">
+                    <i class="fas fa-globe"></i> www.kelurahan.go.id
+                </div>
+            </div>
+
+            <!-- Warga -->
+            <div>
+                <div class="footer-col-title">Warga</div>
+                <ul class="footer-links">
+                    <li><a href="{{ route('register') }}">Daftar Akun</a></li>
+                    <li><a href="{{ route('login') }}">Masuk Portal</a></li>
+                    <li><a href="#layanan">Layanan Kami</a></li>
+                    <li><a href="#tentang">Tentang</a></li>
+                </ul>
+            </div>
+
+            <!-- Tautan Penting -->
+            <div>
+                <div class="footer-col-title">Tautan Penting</div>
+                <ul class="footer-links">
+                    <li><a href="/">Halaman Utama</a></li>
+                    <li><a href="{{ route('login') }}">Layanan Kami</a></li>
+                    <li><a href="#tentang">Panduan</a></li>
+                </ul>
+            </div>
+
+            <!-- Kontak -->
+            <div>
+                <div class="footer-col-title">Kontak</div>
+                <ul class="footer-links">
+                    <li><a href="#kontak">Hubungi Kami</a></li>
+                    <li><a href="{{ route('login') }}">Profil</a></li>
+                </ul>
+
+                <!-- Mini building illustration -->
+                <div style="margin-top: 1.5rem; opacity: .4;">
+                    <svg width="90" height="70" viewBox="0 0 90 70" fill="none">
+                        <rect x="15" y="30" width="60" height="38" rx="2" fill="white"/>
+                        <polygon points="10,32 45,10 80,32" fill="rgba(255,255,255,.7)"/>
+                        <rect x="30" y="45" width="30" height="23" rx="2" fill="rgba(26,61,43,.5)"/>
+                        <rect x="20" y="36" width="12" height="10" rx="1" fill="rgba(26,61,43,.4)"/>
+                        <rect x="58" y="36" width="12" height="10" rx="1" fill="rgba(26,61,43,.4)"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            &copy; {{ date('Y') }} Kelurahan Talun. Hak Cipta Dilindungi.
+        </div>
+    </div>
+</footer>
+
+<script>
+    // Scroll animation observer
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+        const nav = document.querySelector('.navbar');
+        if (window.scrollY > 20) {
+            nav.style.background = 'rgba(26,61,43,.98)';
+        } else {
+            nav.style.background = 'rgba(26,61,43,.95)';
+        }
+    });
+</script>
+</body>
 </html>

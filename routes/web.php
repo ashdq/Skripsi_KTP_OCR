@@ -140,6 +140,11 @@ Route::middleware('auth')->group(function () {
     })->name('petugas.home');
 
     Route::get('/petugas/daftar', function () {
+        $user = Auth::user();
+        if ($user && $user->petugas && $user->petugas->role === 'lurah') {
+            return redirect()->route('petugas.home')->with('error', 'Hanya admin yang dapat melakukan pembuatan surat!');
+        }
+
         $surats = \App\Models\Surat::with('ocr')->latest()->get();
         $total   = $surats->count();
         $proses  = $surats->whereIn('status', ['menunggu', 'diproses'])->count();
@@ -150,6 +155,9 @@ Route::middleware('auth')->group(function () {
 
     Route::patch('/petugas/pengajuan/{surat}/proses', function (\App\Models\Surat $surat) {
         $user = Auth::user();
+        if ($user && $user->petugas && $user->petugas->role === 'lurah') {
+            return back()->with('error', 'Hanya admin yang dapat melakukan pembuatan surat!');
+        }
         if ($user && $user->petugas) {
             $surat->update([
                 'status' => 'diproses',
@@ -162,6 +170,9 @@ Route::middleware('auth')->group(function () {
 
     Route::patch('/petugas/pengajuan/{surat}/tolak', function (\App\Models\Surat $surat) {
         $user = Auth::user();
+        if ($user && $user->petugas && $user->petugas->role === 'lurah') {
+            return back()->with('error', 'Hanya admin yang dapat melakukan pembuatan surat!');
+        }
         if ($user && $user->petugas) {
             $surat->update([
                 'status' => 'ditolak',
@@ -183,6 +194,11 @@ Route::middleware('auth')->group(function () {
 
     // Halaman daftar surat siap tanda tangan (status diproses) & sudah selesai
     Route::get('/petugas/tanda-tangan', function (\Illuminate\Http\Request $request) {
+        $user = Auth::user();
+        if ($user && $user->petugas && $user->petugas->role === 'admin') {
+            return redirect()->route('petugas.home')->with('error', 'Hanya lurah yang dapat melakukan tanda tangan.');
+        }
+
         $filter = $request->query('filter', 'menunggu');
 
         $query = \App\Models\Surat::with('ocr')->whereIn('status', ['diproses', 'selesai'])->latest();
@@ -203,6 +219,10 @@ Route::middleware('auth')->group(function () {
     // Halaman Preview & Edit Surat (dari daftar pengajuan, status menunggu atau diproses)
     Route::get('/petugas/pengajuan/{surat}/generate', function (\App\Models\Surat $surat) {
         $user = Auth::user();
+        if ($user && $user->petugas && $user->petugas->role === 'lurah') {
+            return redirect()->route('petugas.home')->with('error', 'Hanya admin yang dapat melakukan pembuatan surat!');
+        }
+
         if ($user && $user->petugas && in_array($surat->status, ['menunggu', 'diproses'])) {
             $surat->load('ocr');
             return view('petugas.generate-surat', compact('surat'));
@@ -213,6 +233,9 @@ Route::middleware('auth')->group(function () {
     // Route untuk Simpan Surat (menyimpan HTML dan mengubah status ke diproses)
     Route::post('/petugas/pengajuan/{surat}/simpan', function (\Illuminate\Http\Request $request, \App\Models\Surat $surat) {
         $user = Auth::user();
+        if ($user && $user->petugas && $user->petugas->role === 'lurah') {
+            return back()->with('error', 'Hanya admin yang dapat melakukan pembuatan surat!');
+        }
         if ($user && $user->petugas && in_array($surat->status, ['menunggu', 'diproses'])) {
             $htmlContent = $request->input('html_content');
             
@@ -235,6 +258,10 @@ Route::middleware('auth')->group(function () {
     // Halaman tanda tangan detail per surat (dari halaman tanda-tangan)
     Route::get('/petugas/pengajuan/{surat}/tanda-tangan', function (\App\Models\Surat $surat) {
         $user = Auth::user();
+        if ($user && $user->petugas && $user->petugas->role === 'admin') {
+            return redirect()->route('petugas.home')->with('error', 'Hanya lurah yang dapat melakukan tanda tangan.');
+        }
+
         if ($user && $user->petugas && $surat->status === 'diproses') {
             $surat->load('ocr', 'petugas', 'warga');
             return view('petugas.tanda-tangan-surat', compact('surat'));
@@ -245,6 +272,9 @@ Route::middleware('auth')->group(function () {
     // Proses tanda tangan & generate PDF final
     Route::post('/petugas/pengajuan/{surat}/tandatangan', function (\App\Models\Surat $surat) {
         $user = Auth::user();
+        if ($user && $user->petugas && $user->petugas->role === 'admin') {
+            return back()->with('error', 'Hanya lurah yang dapat melakukan tanda tangan.');
+        }
         if ($user && $user->petugas && $surat->status === 'diproses') {
             $surat->load('ocr');
 

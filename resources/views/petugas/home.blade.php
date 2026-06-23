@@ -20,6 +20,17 @@
                     <h1>Selamat Datang {{ auth()->user()->petugas?->nama ?? auth()->user()->name }}</h1>
                 </div>
 
+                @if(session('error'))
+                    <div style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: bold;">
+                        <i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i> {{ session('error') }}
+                    </div>
+                @endif
+                @if(session('success'))
+                    <div style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-weight: bold;">
+                        <i class="fas fa-check-circle" style="margin-right: 8px;"></i> {{ session('success') }}
+                    </div>
+                @endif
+
                 <div class="stats-cards">
                     <div class="stat-card">
                         <div class="stat-icon pending">

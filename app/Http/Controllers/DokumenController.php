@@ -302,6 +302,7 @@ class DokumenController extends Controller
     {
         $validated = $request->validate([
             'jenis_surat' => ['required', 'string'],
+            'keterangan' => ['required', 'string'],
         ]);
 
         /** @var User $user */
@@ -320,6 +321,7 @@ class DokumenController extends Controller
 
         Surat::create([
             'jenis_surat' => $validated['jenis_surat'],
+            'keterangan' => $validated['keterangan'],
             'status' => 'menunggu',
             'warga_id' => $warga->id,
             'ocr_id' => $ocrData->id,
